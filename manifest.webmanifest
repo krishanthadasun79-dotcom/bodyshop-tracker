@@ -1,1 +1,1 @@
-{"name":"Bodyshop Tracker","short_name":"Bodyshop","start_url":"./","scope":"./","display":"standalone","background_color":"#f2f5f9","theme_color":"#12345a","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]}
+{"name":"Bodyshop Tracker","short_name":"Bodyshop","start_url":"./index.html","display":"standalone","background_color":"#ffffff","theme_color":"#b51f65","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]}
