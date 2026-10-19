@@ -219,3 +219,4 @@ $('csvBtn').onclick=()=>{const cols=['registration','jobcard','make','model','st
 applyTheme(localStorage.getItem('bodyshopTrackerTheme')||'magenta');
 setTimeout(()=>{const sp=$('splash');if(sp){sp.classList.add('hide');setTimeout(()=>sp.remove(),400)}},1600);fillSelect('stage',STAGES);fillSelect('stageFilter',STAGES,'All stages');load();refreshWorkers();refreshMakes();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script></body></html>
+<!-- Deployment refresh: 2026-10-19 -->
