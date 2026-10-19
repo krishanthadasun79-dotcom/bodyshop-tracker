@@ -1,19 +1,20 @@
-Bodyshop Tracker — updated version
+Bodyshop Tracker — Version 1.1.0
+By Dasun
 
-Included:
-- Vehicles cards show expected delivery date/time alongside the job number and model.
-- Completed cards show delivered date/time before opening details.
-- Vehicles stats are clickable: Total vehicles shows all ongoing vehicles, In progress filters out overdue vehicles, and Past due shows overdue vehicles.
-- Completed stats are clickable: Completed vehicles shows both Delivered and Job not done, Delivered shows only Delivered, and Job not done shows only Job not done.
-- Vehicle cards remain sorted by arrival date/time newest first; completed cards are sorted by delivered/completion date newest first.
-- New stage changes store a date/time timestamp in stage history.
+Files:
+- index.html: updated standalone app
+
+Updates in this release:
+- Highlights the expected delivery date in light red when it is due tomorrow.
+- Renames the Vehicles tab's "In progress" statistic to "On time".
+- Simplifies the Stages tab description while retaining stage names/icons and vehicle counts.
+- Removes the Reports tab and moves Monthly completion report into Options, immediately before Data backup.
+- Renames Settings to Options.
+- Adds a Version 1.1.0 button at the bottom of Options that opens the disclaimer.
 
 How to use:
-1. Extract the ZIP.
-2. Open index.html in a browser, or host the folder on your existing app server.
-3. The tracker stores data in that browser/device's local storage. Use Settings → Export backup before replacing an existing app.
+1. Export a backup from the existing app before replacing it.
+2. Extract the ZIP file.
+3. Open index.html in a browser, or deploy it using your existing hosting setup.
 
-Note:
-This ZIP contains the app HTML supplied for this update. Optional branding/PWA assets referenced by the original HTML
-(startup.png, icon-192.png, manifest.webmanifest, and sw.js) were not included in the uploaded source file.
-The core tracker interface and features work without those optional files; the startup logo/icon may be missing.
+Note: vehicle records are stored in the browser's local storage on the device where the app is used. They are not included in this ZIP. This ZIP contains the app HTML and this README. Optional PWA/logo assets (startup.png, icon-192.png, manifest.webmanifest, sw.js) were not present in the source upload.
