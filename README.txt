@@ -1,21 +1,19 @@
-BODYSHOP TRACKER — UPDATED RELEASE
+Bodyshop Tracker — updated version
 
-Included files
-- index.html: updated tracker application
-- manifest.webmanifest, sw.js, icon-192.png, icon-512.png: installable app support
+Included:
+- Vehicles cards show expected delivery date/time alongside the job number and model.
+- Completed cards show delivered date/time before opening details.
+- Vehicles stats are clickable: Total vehicles shows all ongoing vehicles, In progress filters out overdue vehicles, and Past due shows overdue vehicles.
+- Completed stats are clickable: Completed vehicles shows both Delivered and Job not done, Delivered shows only Delivered, and Job not done shows only Job not done.
+- Vehicle cards remain sorted by arrival date/time newest first; completed cards are sorted by delivered/completion date newest first.
+- New stage changes store a date/time timestamp in stage history.
 
-Changes in this release
-- Renamed “Waiting approval or Job card” to “Waiting Job card”.
-- Combined “Tire change & Balance” and “Wheel alignment” into one stage: “Tire change & Balance / Wheel alignment”.
-- Existing records are migrated when the updated app loads: old stage names are converted in the current stage and stage history.
-- Monthly completion reports can be exported from Reports as editable Excel-compatible .xls files.
-- Includes the Completed tab, compact vehicle summaries, detail view, stage icons and light stage colours from the previous requested updates.
+How to use:
+1. Extract the ZIP.
+2. Open index.html in a browser, or host the folder on your existing app server.
+3. The tracker stores data in that browser/device's local storage. Use Settings → Export backup before replacing an existing app.
 
-SAFE UPDATE INSTRUCTIONS
-1. Do not uninstall the existing app or clear browser/site data.
-2. If this app is hosted on a website, back up the current site files, then upload/replace the files in this ZIP on the SAME website/origin. Keep the same URL so browser storage remains available.
-3. Open the existing home-screen app while connected to the internet, close it fully, then reopen it. If it still shows the old version, open the same website in the browser and refresh it, then reopen the home-screen app.
-4. Do not install this as a separate new origin if you need access to existing local vehicle records. If the app was opened directly from a local HTML file, local storage may be tied to that file/location; export/backup records before changing files.
-
-Excel export
-Open Reports, then choose “Export Excel report” under the month you want. The downloaded .xls file is editable in Microsoft Excel and compatible spreadsheet apps.
+Note:
+This ZIP contains the app HTML supplied for this update. Optional branding/PWA assets referenced by the original HTML
+(startup.png, icon-192.png, manifest.webmanifest, and sw.js) were not included in the uploaded source file.
+The core tracker interface and features work without those optional files; the startup logo/icon may be missing.
