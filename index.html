@@ -88,6 +88,32 @@ input:focus,select:focus,textarea:focus{outline-color:var(--theme-soft);border-c
 
 .month-filter-label{display:flex;flex-direction:column;gap:5px;min-width:180px;font-size:12px;font-weight:700;color:var(--navy)}.month-filter-label select,.report-range input{padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--text);font:inherit}.report-range{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.report-range label{display:flex;flex:1;min-width:145px;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:var(--navy)}#exportDateRangeBtn{margin-top:8px}@media(max-width:480px){.month-filter-label{width:100%}.report-range label{min-width:100%}}
 .disclaimer-overlay{position:fixed;inset:0;background:#101827aa;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}.disclaimer-box{max-width:620px;width:100%;max-height:90vh;overflow:auto}.disclaimer-box p,.disclaimer-box li{font-size:13px;line-height:1.55}.disclaimer-box li{margin:7px 0}.disclaimer-box ul{padding-left:20px}.disclaimer-box .btn{width:100%}
+
+/* Mobile/PWA navigation fix: scroll the content area, not the whole page.
+   The tab bar is a permanent flex row below the scrolling content. */
+html, body { width:100%; height:100%; min-height:0; }
+body {
+  height:100vh; height:100dvh; min-height:0;
+  display:flex; flex-direction:column; overflow:hidden;
+  padding-bottom:0 !important;
+}
+header { flex:0 0 auto; position:relative; top:auto; }
+main.wrap {
+  flex:1 1 auto; min-height:0; width:100%;
+  overflow-x:hidden; overflow-y:auto;
+  -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;
+  padding-bottom:18px !important;
+}
+nav.tabbar {
+  position:relative !important; top:auto !important; bottom:auto !important;
+  left:auto !important; right:auto !important;
+  flex:0 0 auto !important; width:100% !important;
+  min-height:64px !important; z-index:1000 !important;
+  padding-bottom:calc(7px + env(safe-area-inset-bottom)) !important;
+}
+@media(max-width:450px) {
+  nav.tabbar { position:relative !important; top:auto !important; bottom:auto !important; z-index:1000 !important; }
+}
 </style></head><body>
 <div id="splash" class="splash"><img src="startup.png" alt="Bodyshop Tracker"><div>BODYSHOP TRACKER</div></div><header><div class="top"><img src="icon-192.png" alt=""><div><h1>Bodyshop Tracker</h1><p>Vehicle workflow · Worker assignments</p></div></div></header>
 <main class="wrap">
@@ -171,20 +197,23 @@ function keepBottomNavigationVisible(){
  const nav=document.querySelector('.tabbar');
  if(!nav)return;
  if(nav.parentElement!==document.body)document.body.appendChild(nav);
- nav.style.setProperty('position','fixed','important');
- nav.style.setProperty('bottom','0','important');
- nav.style.setProperty('left','0','important');
- nav.style.setProperty('right','0','important');
- nav.style.setProperty('z-index','2147483000','important');
+ nav.style.setProperty('position','relative','important');
+ nav.style.setProperty('top','auto','important');
+ nav.style.setProperty('bottom','auto','important');
+ nav.style.setProperty('left','auto','important');
+ nav.style.setProperty('right','auto','important');
+ nav.style.setProperty('width','100%','important');
  nav.style.setProperty('display','flex','important');
  nav.style.setProperty('visibility','visible','important');
  nav.style.setProperty('opacity','1','important');
+ nav.style.setProperty('flex','0 0 auto','important');
+ nav.style.setProperty('z-index','1000','important');
 }
 keepBottomNavigationVisible();
-function showView(view){keepBottomNavigationVisible();['vehiclesView','completedView','editView','stagesView','workersView','settingsView'].forEach(id=>$(id).classList.toggle('hidden',id!==view+'View'));const mapping={vehicles:'vehiclesTab',completed:'completedTab',edit:'vehiclesTab',stages:'stagesTab',workers:'workersTab',settings:'settingsTab'};document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active',b.id===mapping[view]));$('fab').classList.toggle('hidden',!['vehicles'].includes(view));window.scrollTo(0,0)}
+function showView(view){keepBottomNavigationVisible();['vehiclesView','completedView','editView','stagesView','workersView','settingsView'].forEach(id=>$(id).classList.toggle('hidden',id!==view+'View'));const mapping={vehicles:'vehiclesTab',completed:'completedTab',edit:'vehiclesTab',stages:'stagesTab',workers:'workersTab',settings:'settingsTab'};document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active',b.id===mapping[view]));$('fab').classList.toggle('hidden',!['vehicles'].includes(view));document.querySelector('.wrap').scrollTo(0,0)}
 function newVehicle(){$('vehicleForm').reset();$('vehicleId').value='';$('formTitle').textContent='Add vehicle';$('arrival').value=localDateTime();$('stage').value=STAGES[0];refreshMakes();['technician','panelbeater','painter','detailer'].forEach(k=>setWorkers(k,[]));$('formStageHistory').innerHTML='';updateDurationPreview();showView('edit')}
-let editReturnScrollY=0;function editVehicle(id){const v=vehicles.find(x=>x.id===id);if(!v)return;editReturnScrollY=window.scrollY;$('vehicleId').value=v.id;$('formTitle').textContent='Edit vehicle';['registration','jobcard','model','stage','notes'].forEach(k=>$(k).value=v[k]||'');$('arrival').value=toDateTimeInput(v.arrival);$('delivery').value=toDateTimeInput(v.delivery);refreshMakes(v.make);['technician','panelbeater','painter','detailer'].forEach(k=>setWorkers(k,v[k]));$('formStageHistory').innerHTML='<b>Stage history</b><br>'+stageHistoryText(v);updateDurationPreview();showView('edit')}
-function updateDurationPreview(){const days=dayDiff($('arrival').value,today()),remain=$('delivery').value?dayDiff(today(),$('delivery').value):null;$('daysElapsed').textContent=days===null?'—':Math.max(0,days)+' day(s)';$('daysRemaining').textContent=remain===null?'—':remain>=0?remain+' day(s)':Math.abs(remain)+' day(s) overdue'}function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.add('hidden'),2600)}$('vehicleForm').addEventListener('submit',e=>{e.preventDefault();const id=$('vehicleId').value||String(Date.now())+'-'+Math.random().toString(36).slice(2,7),old=vehicles.find(v=>v.id===id),stage=$('stage').value;const v={id};['registration','jobcard','model','stage','arrival','delivery','notes'].forEach(k=>v[k]=$(k).value.trim());v.registration=v.registration.toUpperCase();v.jobcard=v.jobcard.toUpperCase();v.model=v.model.toUpperCase();v.make=$('make').value.toUpperCase();['technician','panelbeater','painter','detailer'].forEach(k=>v[k]=selectedWorkers(k));v.createdDate=old?.createdDate||today();v.updatedDate=today();v.stageHistory=old?asArray(old.stageHistory):[{stage,date:today()}];if(old&&old.stage!==stage)v.stageHistory.push({stage,date:today(),dateTime:localDateTime()});if(!old&&v.stage!==STAGES[0])v.stageHistory=[{stage:v.stage,date:today(),dateTime:localDateTime()}];v.completedDate=isCompletedStage(stage)?(old&&isCompletedStage(old.stage)?(old.completedDate||today()):today()):'';v.completedAt=isCompletedStage(stage)?(old&&isCompletedStage(old.stage)?(old.completedAt||old.completedDate||localDateTime()):localDateTime()):'';if(!v.arrival){toast('Please enter arrival date');return}const dup=vehicles.find(x=>x.id!==id&&x.jobcard.toUpperCase()===v.jobcard.toUpperCase());if(dup&&!confirm('Another vehicle uses this job-card number. Save anyway?'))return;if(old)vehicles=vehicles.map(x=>x.id===id?v:x);else vehicles.unshift(v);if(v.make&&!makes.includes(v.make))makes.push(v.make);save();refreshMakes(v.make);render();showView('vehicles');if(old){const returnY=editReturnScrollY;requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,returnY)));}toast(old?'Vehicle updated':'Vehicle saved')});
+let editReturnScrollY=0;function editVehicle(id){const v=vehicles.find(x=>x.id===id);if(!v)return;editReturnScrollY=document.querySelector('.wrap').scrollTop;$('vehicleId').value=v.id;$('formTitle').textContent='Edit vehicle';['registration','jobcard','model','stage','notes'].forEach(k=>$(k).value=v[k]||'');$('arrival').value=toDateTimeInput(v.arrival);$('delivery').value=toDateTimeInput(v.delivery);refreshMakes(v.make);['technician','panelbeater','painter','detailer'].forEach(k=>setWorkers(k,v[k]));$('formStageHistory').innerHTML='<b>Stage history</b><br>'+stageHistoryText(v);updateDurationPreview();showView('edit')}
+function updateDurationPreview(){const days=dayDiff($('arrival').value,today()),remain=$('delivery').value?dayDiff(today(),$('delivery').value):null;$('daysElapsed').textContent=days===null?'—':Math.max(0,days)+' day(s)';$('daysRemaining').textContent=remain===null?'—':remain>=0?remain+' day(s)':Math.abs(remain)+' day(s) overdue'}function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.add('hidden'),2600)}$('vehicleForm').addEventListener('submit',e=>{e.preventDefault();const id=$('vehicleId').value||String(Date.now())+'-'+Math.random().toString(36).slice(2,7),old=vehicles.find(v=>v.id===id),stage=$('stage').value;const v={id};['registration','jobcard','model','stage','arrival','delivery','notes'].forEach(k=>v[k]=$(k).value.trim());v.registration=v.registration.toUpperCase();v.jobcard=v.jobcard.toUpperCase();v.model=v.model.toUpperCase();v.make=$('make').value.toUpperCase();['technician','panelbeater','painter','detailer'].forEach(k=>v[k]=selectedWorkers(k));v.createdDate=old?.createdDate||today();v.updatedDate=today();v.stageHistory=old?asArray(old.stageHistory):[{stage,date:today()}];if(old&&old.stage!==stage)v.stageHistory.push({stage,date:today(),dateTime:localDateTime()});if(!old&&v.stage!==STAGES[0])v.stageHistory=[{stage:v.stage,date:today(),dateTime:localDateTime()}];v.completedDate=isCompletedStage(stage)?(old&&isCompletedStage(old.stage)?(old.completedDate||today()):today()):'';v.completedAt=isCompletedStage(stage)?(old&&isCompletedStage(old.stage)?(old.completedAt||old.completedDate||localDateTime()):localDateTime()):'';if(!v.arrival){toast('Please enter arrival date');return}const dup=vehicles.find(x=>x.id!==id&&x.jobcard.toUpperCase()===v.jobcard.toUpperCase());if(dup&&!confirm('Another vehicle uses this job-card number. Save anyway?'))return;if(old)vehicles=vehicles.map(x=>x.id===id?v:x);else vehicles.unshift(v);if(v.make&&!makes.includes(v.make))makes.push(v.make);save();refreshMakes(v.make);render();showView('vehicles');if(old){const returnY=editReturnScrollY;requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelector('.wrap').scrollTo(0,returnY)));}toast(old?'Vehicle updated':'Vehicle saved')});
 function handleVehicleListClick(e){const details=e.target.closest('[data-details]');if(details){const panel=$('details-'+details.dataset.details);if(panel){panel.classList.toggle('hidden');details.textContent=panel.classList.contains('hidden')?'View details':'Hide details'}return}const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]'),st=e.target.closest('[data-stage]');if(edit)editVehicle(edit.dataset.edit);if(del){const v=vehicles.find(x=>x.id===del.dataset.delete);if(v&&confirm(`Delete ${v.registration} / job card ${v.jobcard}?`)){vehicles=vehicles.filter(x=>x.id!==v.id);save();render();toast('Vehicle deleted')}}if(st){const v=vehicles.find(x=>x.id===st.dataset.stage);if(!v)return;const ans=prompt('Enter stage number:\n'+STAGES.map((s,i)=>`${i+1}. ${stageLabel(s)}`).join('\n'),String(STAGES.indexOf(v.stage)+1));if(ans===null)return;const n=Number(ans);if(!Number.isInteger(n)||n<1||n>STAGES.length){toast('Invalid stage number');return}const next=STAGES[n-1];if(next!==v.stage){v.stage=next;v.updatedDate=today();v.stageHistory=asArray(v.stageHistory);v.stageHistory.push({stage:next,date:today(),dateTime:localDateTime()});if(isCompletedStage(next)){v.completedDate=today();v.completedAt=localDateTime()}else{v.completedDate='';v.completedAt=''}save();render();toast('Repair stage updated')}}}
 $('vehicleList').addEventListener('click',handleVehicleListClick);$('completedList').addEventListener('click',handleVehicleListClick);
 function renderStages(){ $('stageLegend').innerHTML=STAGES.map(s=>`<span class="${STAGE_CLASS[s]}">${escapeHtml(stageLabel(s))}</span>`).join('');$('stageCounts').innerHTML=STAGES.map(s=>`<div class="workerrow"><span class="pill ${STAGE_CLASS[s]}">${escapeHtml(stageLabel(s))}</span><b>${vehicles.filter(v=>v.stage===s).length}</b></div>`).join('')}
@@ -266,6 +295,6 @@ $('csvBtn').onclick=()=>{const cols=['registration','jobcard','make','model','st
  ['appVersion','appVersionModal'].forEach(id=>{const el=$(id);if(el)el.textContent=version;});
 })();
 applyTheme(localStorage.getItem('bodyshopTrackerTheme')||'magenta');
-setTimeout(()=>{const sp=$('splash');if(sp){sp.classList.add('hide');setTimeout(()=>sp.remove(),400)}},1600);fillSelect('stage',STAGES);fillSelect('stageFilter',STAGES,'All stages');load();refreshWorkers();refreshMakes();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+setTimeout(()=>{const sp=$('splash');if(sp){sp.classList.add('hide');setTimeout(()=>sp.remove(),400)}},1600);fillSelect('stage',STAGES);fillSelect('stageFilter',STAGES,'All stages');load();refreshWorkers();refreshMakes();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(()=>{}));
 </script></body></html>
 <!-- Deployment refresh: 2026-10-19 -->
