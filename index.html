@@ -114,6 +114,11 @@ nav.tabbar {
 @media(max-width:450px) {
   nav.tabbar { position:relative !important; top:auto !important; bottom:auto !important; z-index:1000 !important; }
 }
+
+/* Worker availability calendar */
+.worker-calendar-panel{padding:12px;overflow:hidden}.wc-controls{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin:10px 0}.wc-month-label{min-width:132px;text-align:center;font-size:15px;color:var(--navy)}.wc-filter-label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:8px 0}.wc-filter-label select{margin-top:4px}.wc-summary{min-height:34px;padding:8px 10px;margin:8px 0;background:#fff0f7;border:1px solid #f2d5e3;border-radius:9px;font-size:12px;color:#74304f}.wc-legend{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}.wc-legend-item{display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:20px;background:#faf7f9;border:1px solid #eee2e9;font-size:10px;color:#594653}.wc-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}.wc-weekdays,.wc-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}.wc-weekdays span{text-align:center;padding:5px 0;font-size:10px;font-weight:800;color:var(--muted)}.wc-day{min-width:0;min-height:86px;padding:4px 3px;border:1px solid #eee2e9;border-radius:7px;background:#fff;overflow:hidden}.wc-day.outside{background:#faf7f9;opacity:.55}.wc-day.selected{border:2px solid var(--blue);background:#fff5fa;padding:3px 2px}.wc-day.today .wc-day-number{background:var(--blue);color:#fff}.wc-day-head{display:flex;justify-content:center;margin-bottom:3px}.wc-day-number{border:0;background:transparent;border-radius:20px;min-width:22px;height:22px;padding:0 4px;font-size:11px;font-weight:800;color:var(--text)}.wc-event{display:block;width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;border:0;border-left:3px solid var(--worker-color);border-radius:4px;background:color-mix(in srgb,var(--worker-color) 14%,white);color:#342631;font-size:9px;line-height:1.35;padding:3px 3px;margin:2px 0;cursor:pointer}.wc-more{font-size:9px;color:var(--muted);padding:1px 2px}.wc-day-details{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}.wc-day-details h3{font-size:13px;margin:0 0 7px;color:var(--navy)}.wc-booking{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;margin:5px 0;border-radius:8px;background:#fff8fc;border:1px solid #f0dce7}.wc-booking-main{min-width:0;font-size:12px}.wc-booking-main b{display:block;overflow-wrap:anywhere}.wc-booking-main small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.wc-booking .btn{flex:none}.wc-empty{font-size:11px;color:var(--muted);padding:8px 2px}
+@media(max-width:520px){.worker-calendar-panel{padding:9px}.wc-grid{gap:2px}.wc-day{min-height:76px;padding:3px 2px}.wc-day-number{min-width:20px;height:20px;font-size:10px}.wc-event{font-size:8px;padding:2px 2px;border-left-width:2px}.wc-weekdays span{font-size:9px}.wc-month-label{min-width:112px;font-size:14px}.wc-controls{gap:5px}.wc-controls .btn{padding:7px 8px}}
+
 </style></head><body>
 <div id="splash" class="splash"><img src="startup.png" alt="Bodyshop Tracker"><div>BODYSHOP TRACKER</div></div><header><div class="top"><img src="icon-192.png" alt=""><div><h1>Bodyshop Tracker</h1><p>Vehicle workflow · Worker assignments</p></div></div></header>
 <main class="wrap">
@@ -128,7 +133,20 @@ nav.tabbar {
 <label class="full">Current repair stage *<select id="stage" required></select></label>
 <div class="full"><div class="sectiontitle">REPAIR DURATION</div><div class="meta"><div><span>Total repair days</span><b id="daysElapsed">—</b></div><div><span>Days to delivery</span><b id="daysRemaining">—</b></div></div><div class="hint">Calendar days. Stage durations are tracked from each stage change.</div><div id="formStageHistory" class="stagehistory"></div></div></div><div class="formactions"><button type="button" class="btn secondary" id="cancelBtn">Cancel</button><button type="submit" class="btn">Save vehicle</button></div></form></div></section>
 <section id="stagesView" class="hidden"><div class="panel"><h2>Repair stages</h2><div id="stageLegend" class="legend"></div><div class="sectiontitle">VEHICLES BY CURRENT STAGE</div><div id="stageCounts"></div></div></section>
-<section id="workersView" class="hidden"><div class="panel"><h2>Worker directory</h2><p class="hint">Add workers in the matching section. New names will appear in the vehicle assignment dropdowns.</p><div id="workerDirectory"></div></div></section>
+<section id="workersView" class="hidden">
+<div class="panel worker-calendar-panel">
+<h2>Worker availability calendar</h2>
+<p class="hint">Ongoing vehicles are shown from their arrival date through expected delivery. Choose a worker to see their booked and free days.</p>
+<div class="wc-controls"><button type="button" class="btn secondary small" id="workerCalPrev" aria-label="Previous month">‹</button><strong id="workerCalMonth" class="wc-month-label"></strong><button type="button" class="btn secondary small" id="workerCalNext" aria-label="Next month">›</button><button type="button" class="btn small" id="workerCalToday">Today</button></div>
+<label class="wc-filter-label">Show workload for<select id="workerCalFilter"><option value="">All workers</option></select></label>
+<div id="workerCalSummary" class="wc-summary"></div>
+<div id="workerCalLegend" class="wc-legend"></div>
+<div class="wc-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+<div id="workerCalGrid" class="wc-grid" aria-label="Worker workload calendar"></div>
+<div class="wc-day-details"><h3 id="workerCalSelectedTitle">Bookings for today</h3><div id="workerCalDayList"></div></div>
+</div>
+<div class="panel"><h2>Worker directory</h2><p class="hint">Add workers in the matching section. New names will appear in the vehicle assignment dropdowns.</p><div id="workerDirectory"></div></div>
+</section>
 <section id="settingsView" class="hidden"><div class="panel theme-panel"><h2>App colour theme</h2><p class="hint">Choose a theme for the header, buttons, navigation and page accents. Your choice is saved on this device.</p><div class="theme-grid" id="themeChoices"></div></div><div class="panel"><h2>Vehicle makes</h2><p class="hint">Select a make when adding a vehicle. Add brands here to extend the dropdown.</p><div class="addworker"><input id="newMake" placeholder="Add vehicle brand" autocapitalize="words"><button class="btn" id="addMakeBtn">Add make</button></div><div id="makeDirectory"></div></div><div class="panel"><h2>Completion report</h2><p class="hint">Select a start date and end date to export all vehicles marked Delivered or Job not done during that period.</p><div class="report-range"><label>Start date<input type="date" id="reportStartDate"></label><label>End date<input type="date" id="reportEndDate"></label></div><div id="reportRangeCount" class="hint" aria-live="polite"></div><button type="button" class="btn" id="exportDateRangeBtn">Export Excel report</button></div><div class="panel"><h2>Data backup</h2><div class="actions"><button class="btn" id="exportBtn">Export backup</button><button class="btn secondary" id="importBtn">Import backup</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"></div><div class="actions"><button class="btn secondary" id="csvBtn">Export vehicle list (CSV)</button></div><p class="hint">Records are saved in this browser on this device. Back up regularly. Importing replaces the current data.</p></div><div class="panel" style="text-align:center"><button type="button" class="btn secondary" id="disclaimerBtn">Version <span id="appVersion">1.1.0</span></button></div></section>
 </main><button class="fab" id="fab" aria-label="Add vehicle">+</button><nav class="tabbar"><button id="vehiclesTab" class="active"><span>🚘</span>Vehicles</button><button id="completedTab"><span>✅</span>Completed</button><button id="stagesTab"><span>🎨</span>Stages</button><button id="workersTab"><span>👥</span>Workers</button><button id="settingsTab"><span>⚙️</span>Options</button></nav><div id="disclaimerModal" class="disclaimer-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="disclaimerTitle"><div class="panel disclaimer-box"><h2 id="disclaimerTitle">Disclaimer</h2><p>The Bodyshop Tracker app is intended to assist with vehicle tracking, repair-stage monitoring, expected delivery dates, worker assignments, and completion reports.</p><ul><li><b>Accuracy of information:</b> Users are responsible for ensuring that vehicle details, repair stages, dates, and other records are accurate and up to date.</li><li><b>Expected delivery dates:</b> These dates are estimates and may change due to delays, parts availability, additional repairs, or other circumstances.</li><li><b>Data and backups:</b> Users should regularly export and securely store backups. The app developer cannot guarantee recovery of lost, deleted, corrupted, or inaccessible data.</li><li><b>Reports:</b> Monthly completion reports and other displayed statistics depend on the accuracy and completeness of the recorded information.</li><li><b>Responsibility:</b> This app is a tracking and record-keeping tool. Users remain responsible for business decisions, customer communications, and vehicle delivery commitments.</li></ul><p>By using this app, you acknowledge these limitations and agree to use the information at your own discretion.</p><p class="hint" style="text-align:center;font-weight:700">Version <span id="appVersionModal">1.1.0</span> Bodyshop Tracker - By Dasun.</p><button type="button" class="btn" id="closeDisclaimerBtn">Close</button></div></div><div id="toast" class="toast hidden"></div>
 <script>
@@ -218,7 +236,62 @@ function handleVehicleListClick(e){const details=e.target.closest('[data-details
 $('vehicleList').addEventListener('click',handleVehicleListClick);$('completedList').addEventListener('click',handleVehicleListClick);
 function renderStages(){ $('stageLegend').innerHTML=STAGES.map(s=>`<span class="${STAGE_CLASS[s]}">${escapeHtml(stageLabel(s))}</span>`).join('');$('stageCounts').innerHTML=STAGES.map(s=>`<div class="workerrow"><span class="pill ${STAGE_CLASS[s]}">${escapeHtml(stageLabel(s))}</span><b>${vehicles.filter(v=>v.stage===s).length}</b></div>`).join('')}
 
+let workerCalendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+let workerCalendarSelectedDate=today();
+let workerCalendarFilter='';
+const WORKER_CAL_COLORS=['#2563eb','#0f9d78','#d97706','#a855f7','#db2777','#0891b2','#65a30d','#dc2626','#4f46e5','#c2410c','#0d9488','#9333ea','#be123c','#0369a1','#4d7c0f','#a16207'];
+const workerCalendarRoles=[['Technicians','technician'],['Panel beaters','panelbeater'],['Painters','painter'],['Detailers','detailer']];
+function workerCalendarPeople(){return workerCalendarRoles.flatMap(([role,key])=>(workers[role]||[]).map(name=>({role,key,name,id:key+'|'+name})));}
+function workerCalendarColor(id){const index=workerCalendarPeople().findIndex(p=>p.id===id);return WORKER_CAL_COLORS[(index<0?0:index)%WORKER_CAL_COLORS.length];}
+function workerCalendarDate(y,m,d){return `${y}-${pad(m+1)}-${pad(d)}`;}
+function workerCalendarAddDays(date,amount){const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+amount);return workerCalendarDate(d.getFullYear(),d.getMonth(),d.getDate());}
+function workerCalendarEvents(){
+ const people=workerCalendarPeople(),active=vehicles.filter(v=>!isCompletedStage(v.stage)),events=[];
+ active.forEach(v=>{
+  const start=dateOnly(v.arrival);if(!start)return;
+  const delivery=dateOnly(v.delivery);let end=delivery||today();
+  // An overdue vehicle is still occupying its assigned worker while it remains ongoing.
+  if(end<today())end=today();if(end<start)end=start;
+  people.forEach(person=>{if(asArray(v[person.key]).includes(person.name)&&(!workerCalendarFilter||workerCalendarFilter===person.id))events.push({v,person,start,end,color:workerCalendarColor(person.id)});});
+ });
+ return events;
+}
+function workerCalendarRender(){
+ const filter=$('workerCalFilter');if(!filter)return;
+ const people=workerCalendarPeople(),old=workerCalendarFilter;
+ filter.innerHTML='<option value="">All workers</option>'+workerCalendarRoles.map(([role,key])=>{const opts=people.filter(p=>p.key===key).map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join('');return opts?`<optgroup label="${escapeHtml(role)}">${opts}</optgroup>`:''}).join('');
+ workerCalendarFilter=people.some(p=>p.id===old)?old:'';filter.value=workerCalendarFilter;
+ const monthStart=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth(),1),year=monthStart.getFullYear(),month=monthStart.getMonth();
+ $('workerCalMonth').textContent=monthStart.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+ const events=workerCalendarEvents(),monthDays=new Date(year,month+1,0).getDate();
+ const visiblePeople=workerCalendarFilter?people.filter(p=>p.id===workerCalendarFilter):people;
+ $('workerCalLegend').innerHTML=visiblePeople.length?visiblePeople.map(p=>`<span class="wc-legend-item"><i class="wc-dot" style="background:${workerCalendarColor(p.id)}"></i>${escapeHtml(p.name)} <span>(${escapeHtml(p.role)})</span></span>`).join(''):'<span class="wc-empty">Add workers in the directory to see their calendar colours.</span>';
+ if(workerCalendarFilter){const monthEvents=events.filter(e=>e.start<=workerCalendarDate(year,month,monthDays)&&e.end>=workerCalendarDate(year,month,1));const bookedVehicles=new Set(monthEvents.map(e=>e.v.id)).size;const bookedDays=new Set();monthEvents.forEach(e=>{const from=e.start>workerCalendarDate(year,month,1)?e.start:workerCalendarDate(year,month,1),to=e.end<workerCalendarDate(year,month,monthDays)?e.end:workerCalendarDate(year,month,monthDays);for(let d=from;d<=to;d=workerCalendarAddDays(d,1))bookedDays.add(d)});const person=people.find(p=>p.id===workerCalendarFilter);$('workerCalSummary').textContent=`${person?person.name+': ':''}${bookedVehicles} ongoing vehicle(s) scheduled · ${bookedDays.size} booked day(s) · ${monthDays-bookedDays.size} day(s) with no booking this month`;}
+ else $('workerCalSummary').textContent=`${vehicles.filter(v=>!isCompletedStage(v.stage)).length} ongoing vehicle(s) in the workshop · Select a worker to check their individual availability.`;
+ const firstOffset=(monthStart.getDay()+6)%7,gridStart=workerCalendarAddDays(workerCalendarDate(year,month,1),-firstOffset),cells=[];
+ for(let i=0;i<42;i++){
+  const date=workerCalendarAddDays(gridStart,i),dObj=new Date(date+'T12:00:00'),dayEvents=events.filter(e=>e.start<=date&&e.end>=date);
+  const isOutside=dObj.getMonth()!==month,selected=date===workerCalendarSelectedDate,isToday=date===today();
+  const chips=dayEvents.slice(0,3).map(e=>`<button type="button" class="wc-event" style="--worker-color:${e.color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' — '+e.person.name+' · '+e.v.stage)}">${escapeHtml(e.v.registration||'Vehicle')} · ${escapeHtml(e.person.name)}</button>`).join('');
+  const more=dayEvents.length>3?`<div class="wc-more">+${dayEvents.length-3} more</div>`:'';
+  cells.push(`<div class="wc-day${isOutside?' outside':''}${selected?' selected':''}${isToday?' today':''}"><div class="wc-day-head"><button type="button" class="wc-day-number" data-wc-day="${date}" aria-label="Show bookings for ${date}">${dObj.getDate()}</button></div>${chips}${more}</div>`);
+ }
+ $('workerCalGrid').innerHTML=cells.join('');
+ workerCalendarRenderSelectedDay(events);
+}
+function workerCalendarRenderSelectedDay(events=workerCalendarEvents()){
+ const date=workerCalendarSelectedDate,dayEvents=events.filter(e=>e.start<=date&&e.end>=date);
+ const d=new Date(date+'T12:00:00');$('workerCalSelectedTitle').textContent='Bookings for '+d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ $('workerCalDayList').innerHTML=dayEvents.length?dayEvents.map(e=>`<div class="wc-booking"><div class="wc-booking-main"><b><i class="wc-dot" style="background:${e.color};margin-right:5px"></i>${escapeHtml(e.v.registration)} — ${escapeHtml(e.person.name)}</b><small>${escapeHtml(e.v.make+' '+e.v.model)} · ${escapeHtml(e.person.role)} · ${escapeHtml(e.v.stage)} · Due: ${escapeHtml(e.v.delivery?formatDateTime(e.v.delivery):'Not set')}</small></div><button type="button" class="btn secondary small" data-wc-edit="${escapeHtml(e.v.id)}">Edit</button></div>`).join(''):'<div class="wc-empty">No worker bookings shown for this date.</div>';
+}
+$('workerCalPrev').onclick=()=>{workerCalendarMonth=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth()-1,1);workerCalendarSelectedDate=workerCalendarDate(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth(),1);workerCalendarRender()};
+$('workerCalNext').onclick=()=>{workerCalendarMonth=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth()+1,1);workerCalendarSelectedDate=workerCalendarDate(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth(),1);workerCalendarRender()};
+$('workerCalToday').onclick=()=>{const d=new Date();workerCalendarMonth=new Date(d.getFullYear(),d.getMonth(),1);workerCalendarSelectedDate=today();workerCalendarRender()};
+$('workerCalFilter').onchange=e=>{workerCalendarFilter=e.target.value;workerCalendarRender()};
+$('workerCalGrid').addEventListener('click',e=>{const edit=e.target.closest('[data-wc-edit]');if(edit){editVehicle(edit.dataset.wcEdit);return}const day=e.target.closest('[data-wc-day]');if(day){workerCalendarSelectedDate=day.dataset.wcDay;workerCalendarRender()}});
+$('workerCalDayList').addEventListener('click',e=>{const edit=e.target.closest('[data-wc-edit]');if(edit)editVehicle(edit.dataset.wcEdit)});
 function renderWorkers(){
+  workerCalendarRender();
   const roles=[['Technicians','technician'],['Panel beaters','panelbeater'],['Painters','painter'],['Detailers','detailer']];
   $('workerDirectory').innerHTML=roles.map(([role,key])=>`
     <div class="sectiontitle">${role}</div>
