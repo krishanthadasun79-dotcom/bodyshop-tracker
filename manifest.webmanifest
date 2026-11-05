@@ -1,10 +1,9 @@
 {
   "name": "Bodyshop Tracker",
-  "short_name": "Bodyshop",
+  "short_name": "Bodyshop Tracker",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#f2f5f9",
+  "background_color": "#fff7fb",
   "theme_color": "#9d1b5b",
   "icons": [
     {
