@@ -150,7 +150,7 @@ nav.tabbar {
 <div class="wc-controls"><button type="button" class="btn secondary small" id="workerCalPrev" aria-label="Previous month">‹</button><strong id="workerCalMonth" class="wc-month-label"></strong><button type="button" class="btn secondary small" id="workerCalNext" aria-label="Next month">›</button><button type="button" class="btn small" id="workerCalToday">Today</button></div>
 <div id="workerRoleCalendars"></div>
 </div>
-<div class="panel worker-concerns-panel"><label class="worker-concern-select">Select worker<select id="workerConcernSelect"><option value="">Select worker</option><option value="*">All workers</option></select></label><div id="workerConcernResults"></div></div><div class="panel worker-add-panel"><h2>Add workers</h2><p class="hint">Add names to the matching trade. They will become available in vehicle assignment dropdowns.</p>
+<div class="panel worker-concerns-panel"><h2>Worker repair concerns</h2><label class="worker-concern-select">Select worker<select id="workerConcernSelect"><option value="">Select worker</option><option value="*">All workers</option></select></label><div id="workerConcernResults"></div></div><div class="panel worker-add-panel"><h2>Add workers</h2><p class="hint">Add names to the matching trade. They will become available in vehicle assignment dropdowns.</p>
 <div class="worker-add-grid">
 <div class="worker-add-box"><label for="add-technician">New technician addition</label><div class="addworker"><input id="add-technician" placeholder="Technician name" autocapitalize="words"><button class="btn" data-add-worker="technician">Add</button></div></div>
 <div class="worker-add-box"><label for="add-panelbeater">New panel beater addition</label><div class="addworker"><input id="add-panelbeater" placeholder="Panel beater name" autocapitalize="words"><button class="btn" data-add-worker="panelbeater">Add</button></div></div>
@@ -274,8 +274,9 @@ const WORKER_CAL_COLORS=['#2563eb','#0f9d78','#d97706','#a855f7','#db2777','#089
 const workerCalendarRoles=[['Technicians','technician'],['Panel beaters','panelbeater'],['Painters','painter'],['Detailers','detailer']];
 function workerCalendarRoleForKey(key){return workerCalendarRoles.find(x=>x[1]===key);}
 function workerCalendarColor(key,name){
- const value=(key+'|'+name).split('').reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619)>>>0,2166136261);
- return WORKER_CAL_COLORS[value%WORKER_CAL_COLORS.length];
+ const roster=workerCalendarRoles.flatMap(([role,workerKey])=>(workers[role]||[]).map(person=>workerKey+'|'+person));
+ const index=roster.indexOf(key+'|'+name);
+ return WORKER_CAL_COLORS[(index<0?0:index)%WORKER_CAL_COLORS.length];
 }
 function workerCalendarDate(y,m,d){return `${y}-${pad(m+1)}-${pad(d)}`;}
 function workerCalendarAddDays(date,amount){const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+amount);return workerCalendarDate(d.getFullYear(),d.getMonth(),d.getDate());}
@@ -312,13 +313,28 @@ function workerCalendarSingleMarkup(key,name,year,month){
  }
  return `<section class="wc-role-calendar"><div class="wc-role-head"><h3><i class="wc-dot" style="background:${color};display:inline-block;vertical-align:middle"></i> ${escapeHtml(name)} · ${role[0]}</h3><span class="wc-role-summary">${bookedVehicles} ongoing vehicle(s) · ${bookedDates.size} booked day(s) · ${freeDays} free day(s)</span></div><div class="wc-calendar-scroll"><div class="wc-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div class="wc-grid" aria-label="${escapeHtml(role[0])} availability calendar for ${escapeHtml(name)}">${cells.join('')}</div></div></section>`;
 }
+function workerCalendarAllMarkup(year,month){
+ const monthDays=new Date(year,month+1,0).getDate(),monthStart=new Date(year,month,1),monthFirst=workerCalendarDate(year,month,1),monthLast=workerCalendarDate(year,month,monthDays);
+ const roster=workerCalendarRoles.flatMap(([role,key])=>(workers[role]||[]).map(name=>({role,key,name,color:workerCalendarColor(key,name)})));
+ const entries=roster.flatMap(person=>workerCalendarEvents(person.key,person.name).map(e=>({...e,person})));
+ const monthEntries=entries.filter(e=>e.start<=monthLast&&e.end>=monthFirst),bookedVehicles=new Set(monthEntries.map(e=>e.v.id)).size,bookedDates=new Set();
+ monthEntries.forEach(e=>{const from=e.start>monthFirst?e.start:monthFirst,to=e.end<monthLast?e.end:monthLast;for(let d=from;d<=to;d=workerCalendarAddDays(d,1))bookedDates.add(d)});
+ const freeDays=monthDays-bookedDates.size,firstOffset=(monthStart.getDay()+6)%7,gridStart=workerCalendarAddDays(monthFirst,-firstOffset),cells=[];
+ for(let i=0;i<42;i++){
+  const date=workerCalendarAddDays(gridStart,i),dObj=new Date(date+'T12:00:00'),dayEntries=entries.filter(e=>e.start<=date&&e.end>=date),isOutside=dObj.getMonth()!==month,isToday=date===today();
+  const chips=dayEntries.map(e=>`<button type="button" class="wc-event" style="--worker-color:${e.person.color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' · '+e.v.stage+' · '+e.person.name)}"><strong>${escapeHtml(e.v.registration||'Vehicle')}</strong><small>${escapeHtml(e.person.name)} · ${escapeHtml(e.person.role)} · ${escapeHtml(e.v.stage||'')}</small></button>`).join('');
+  cells.push(`<div class="wc-day${isOutside?' outside':''}${isToday?' today':''}"><div class="wc-day-head"><span class="wc-day-number">${dObj.getDate()}</span></div>${chips||'<div class="wc-empty">Free</div>'}</div>`);
+ }
+ const legend=roster.map(p=>`<span class="wc-legend-item"><i class="wc-dot" style="background:${p.color}"></i>${escapeHtml(p.name)} <small>(${escapeHtml(p.role)})</small></span>`).join('');
+ return `<section class="wc-role-calendar"><div class="wc-role-head"><h3>All workers · Combined availability</h3><span class="wc-role-summary">${roster.length} worker(s) · ${bookedVehicles} vehicle(s) · ${bookedDates.size} booked day(s) · ${freeDays} free day(s)</span></div><div class="wc-legend">${legend}</div><div class="wc-calendar-scroll"><div class="wc-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div class="wc-grid" aria-label="Combined availability calendar for all workers">${cells.join('')}</div></div></section>`;
+}
 function workerCalendarRender(){
  const monthStart=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth(),1),year=monthStart.getFullYear(),month=monthStart.getMonth();
  $('workerCalMonth').textContent=monthStart.toLocaleDateString(undefined,{month:'long',year:'numeric'});
  const key=$('workerRoleSelect').value,name=$('workerPersonSelect').value,container=$('workerRoleCalendars');
  if(key==='all'){
-  const sections=workerCalendarRoles.flatMap(([role,workerKey])=>(workers[role]||[]).map(person=>workerCalendarSingleMarkup(workerKey,person,year,month)));
-  container.innerHTML=sections.length?sections.join(''):'<div class="wc-select-prompt">No workers have been added yet.</div>';return;
+  const hasWorkers=workerCalendarRoles.some(([role])=>(workers[role]||[]).length);
+  container.innerHTML=hasWorkers?workerCalendarAllMarkup(year,month):'<div class="wc-select-prompt">No workers have been added yet.</div>';return;
  }
  if(!name){container.innerHTML='<div class="wc-select-prompt">Select a worker to view their current vehicle bookings and free days.</div>';return;}
  container.innerHTML=workerCalendarSingleMarkup(key,name,year,month);
