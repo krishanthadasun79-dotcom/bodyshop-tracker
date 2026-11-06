@@ -144,13 +144,13 @@ nav.tabbar {
 <h2>Worker availability calendars</h2>
 <p class="hint">Each calendar shows only that trade. A booking runs from vehicle arrival through expected delivery; overdue ongoing vehicles remain booked through today. Each worker has a consistent colour. Select a vehicle booking to edit it.</p>
 <div class="wc-selectors">
-<label>Worker category<select id="workerRoleSelect" aria-label="Choose worker category"><option value="technician">Technicians</option><option value="panelbeater">Panel beaters</option><option value="painter">Painters</option><option value="detailer">Detailers</option></select></label>
+<label>Worker category<select id="workerRoleSelect" aria-label="Choose worker category"><option value="all">All workers</option><option value="technician">Technicians</option><option value="panelbeater">Panel beaters</option><option value="painter">Painters</option><option value="detailer">Detailers</option></select></label>
 <label>Choose worker<select id="workerPersonSelect" aria-label="Choose individual worker"><option value="">Select a worker</option></select></label>
 </div>
 <div class="wc-controls"><button type="button" class="btn secondary small" id="workerCalPrev" aria-label="Previous month">‹</button><strong id="workerCalMonth" class="wc-month-label"></strong><button type="button" class="btn secondary small" id="workerCalNext" aria-label="Next month">›</button><button type="button" class="btn small" id="workerCalToday">Today</button></div>
 <div id="workerRoleCalendars"></div>
 </div>
-<div class="panel worker-concerns-panel"><h2>Repair concerns by worker</h2><p class="hint">Choose a worker to see the vehicle number, job number and repair concerns assigned to them.</p><label class="worker-concern-select">Select worker<select id="workerConcernSelect"><option value="">All workers</option></select></label><div id="workerConcernResults"></div></div><div class="panel worker-add-panel"><h2>Add workers</h2><p class="hint">Add names to the matching trade. They will become available in vehicle assignment dropdowns.</p>
+<div class="panel worker-concerns-panel"><label class="worker-concern-select">Select worker<select id="workerConcernSelect"><option value="">Select worker</option><option value="*">All workers</option></select></label><div id="workerConcernResults"></div></div><div class="panel worker-add-panel"><h2>Add workers</h2><p class="hint">Add names to the matching trade. They will become available in vehicle assignment dropdowns.</p>
 <div class="worker-add-grid">
 <div class="worker-add-box"><label for="add-technician">New technician addition</label><div class="addworker"><input id="add-technician" placeholder="Technician name" autocapitalize="words"><button class="btn" data-add-worker="technician">Add</button></div></div>
 <div class="worker-add-box"><label for="add-panelbeater">New panel beater addition</label><div class="addworker"><input id="add-panelbeater" placeholder="Panel beater name" autocapitalize="words"><button class="btn" data-add-worker="panelbeater">Add</button></div></div>
@@ -158,7 +158,7 @@ nav.tabbar {
 <div class="worker-add-box"><label for="add-detailer">New Detailer addition</label><div class="addworker"><input id="add-detailer" placeholder="Detailer name" autocapitalize="words"><button class="btn" data-add-worker="detailer">Add</button></div></div>
 </div></div>
 </section>
-<section id="settingsView" class="hidden"><div class="panel"><h2>Vehicle makes</h2><p class="hint">Select a make when adding a vehicle. Add brands here to extend the dropdown.</p><div class="addworker"><input id="newMake" placeholder="Add vehicle brand" autocapitalize="words"><button class="btn" id="addMakeBtn">Add make</button></div></div><div class="panel theme-panel"><h2>App colour theme</h2><p class="hint">Choose a theme for the header, buttons, navigation and page accents. Your choice is saved on this device.</p><div class="theme-grid" id="themeChoices"></div></div><div class="panel"><h2>Completion report</h2><p class="hint">Select a start date and end date to export all vehicles marked Delivered or Job not done during that period.</p><div class="report-range"><label>Start date<input type="date" id="reportStartDate"></label><label>End date<input type="date" id="reportEndDate"></label></div><div id="reportRangeCount" class="hint" aria-live="polite"></div><button type="button" class="btn" id="exportDateRangeBtn">Export Excel report</button></div><div class="panel"><h2>Data backup</h2><div class="actions"><button class="btn" id="exportBtn">Export backup</button><button class="btn secondary" id="importBtn">Import backup</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"></div><div class="actions"><button class="btn secondary" id="csvBtn">Export vehicle list (CSV)</button></div><p class="hint">Records are saved in this browser on this device. Back up regularly. Importing replaces the current data.</p></div><div class="panel" style="text-align:center"><button type="button" class="btn secondary" id="disclaimerBtn">Version <span id="appVersion">1.1.0</span></button></div></section>
+<section id="settingsView" class="hidden"><div class="panel"><h2>Vehicle makes</h2><p class="hint">Select a make when adding a vehicle. Add brands here to extend the dropdown.</p><div class="addworker"><input id="newMake" placeholder="Add vehicle brand" autocapitalize="words"><button class="btn" id="addMakeBtn">Add make</button></div></div><div class="panel theme-panel"><h2>App colour theme</h2><p class="hint">Choose a theme for the header, buttons, navigation and page accents. Your choice is saved on this device.</p><div class="theme-grid" id="themeChoices"></div></div><div class="panel"><h2>Completion report</h2><p class="hint">Select a start date and end date to export all vehicles marked Delivered or Job not done during that period.</p><div class="report-range"><label>Start date<input type="date" id="reportStartDate"></label><label>End date<input type="date" id="reportEndDate"></label></div><div id="reportRangeCount" class="hint" aria-live="polite"></div><label class="report-share-label" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-top:10px">Report action<select id="reportAction" style="margin-top:5px"><option value="download">Download Excel report</option><option value="email">Share via email</option><option value="share">Share report…</option><option value="print">Print / Save as PDF</option></select></label><button type="button" class="btn" id="exportDateRangeBtn">Continue</button><p class="hint">Email attachment support depends on your device and browser. If direct attachment sharing is unavailable, the report will download and you can attach it manually in your email app.</p></div><div class="panel"><h2>Data backup</h2><div class="actions"><button class="btn" id="exportBtn">Export backup</button><button class="btn secondary" id="importBtn">Import backup</button><input type="file" id="importFile" accept="application/json,.json" class="hidden"></div><div class="actions"><button class="btn secondary" id="csvBtn">Export vehicle list (CSV)</button></div><p class="hint">Records are saved in this browser on this device. Back up regularly. Importing replaces the current data.</p></div><div class="panel" style="text-align:center"><button type="button" class="btn secondary" id="disclaimerBtn">Version <span id="appVersion">1.1.0</span></button></div></section>
 </main><button class="fab" id="fab" aria-label="Add vehicle">+</button><nav class="tabbar"><button id="vehiclesTab" class="active"><span>🚘</span>Vehicles</button><button id="completedTab"><span>✅</span>Completed</button><button id="stagesTab"><span>🎨</span>Stages</button><button id="workersTab"><span>👥</span>Workers</button><button id="settingsTab"><span>⚙️</span>Options</button></nav><div id="disclaimerModal" class="disclaimer-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="disclaimerTitle"><div class="panel disclaimer-box"><h2 id="disclaimerTitle">Disclaimer</h2><p>The Bodyshop Tracker app is intended to assist with vehicle tracking, repair-stage monitoring, expected delivery dates, worker assignments, and completion reports.</p><ul><li><b>Accuracy of information:</b> Users are responsible for ensuring that vehicle details, repair stages, dates, and other records are accurate and up to date.</li><li><b>Expected delivery dates:</b> These dates are estimates and may change due to delays, parts availability, additional repairs, or other circumstances.</li><li><b>Data and backups:</b> Users should regularly export and securely store backups. The app developer cannot guarantee recovery of lost, deleted, corrupted, or inaccessible data.</li><li><b>Reports:</b> Monthly completion reports and other displayed statistics depend on the accuracy and completeness of the recorded information.</li><li><b>Responsibility:</b> This app is a tracking and record-keeping tool. Users remain responsible for business decisions, customer communications, and vehicle delivery commitments.</li></ul><p>By using this app, you acknowledge these limitations and agree to use the information at your own discretion.</p><p class="hint" style="text-align:center;font-weight:700">Version <span id="appVersionModal">1.1.0</span> Bodyshop Tracker - By Dasun.</p><button type="button" class="btn" id="closeDisclaimerBtn">Close</button></div></div><div id="toast" class="toast hidden"></div>
 <script>
 const STAGES=['Waiting approval','Waiting Job card','Waiting Labor','Tire change & Balance / Wheel alignment','Mechanical repair in progress','Disassembling','Panel Beating','Preparation','Painting','Reassembly','Detailing','Waiting for parts','QC','Job not done','Delivered'];
@@ -290,39 +290,38 @@ function workerCalendarEvents(key,name){
  return events;
 }
 function workerCalendarRefreshPeople(){
- const key=$('workerRoleSelect').value,role=workerCalendarRoleForKey(key),select=$('workerPersonSelect');
- const current=select.value,names=workers[role[0]]||[];
- select.innerHTML='<option value="">Select a worker</option>'+names.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
- if(names.includes(current))select.value=current;
- else if(names.length)select.value=names[0];
+ const key=$('workerRoleSelect').value,select=$('workerPersonSelect');
+ if(key==='all'){select.innerHTML='<option value="*">All workers</option>';select.value='*';}
+ else{
+  const role=workerCalendarRoleForKey(key),names=workers[role?.[0]]||[],current=select.value;
+  select.innerHTML='<option value="">Select a worker</option>'+names.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+  if(names.includes(current))select.value=current;else if(names.length)select.value=names[0];
+ }
  workerCalendarRender();
 }
-function workerCalendarRender(){
- const monthStart=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth(),1),year=monthStart.getFullYear(),month=monthStart.getMonth();
- $('workerCalMonth').textContent=monthStart.toLocaleDateString(undefined,{month:'long',year:'numeric'});
- const key=$('workerRoleSelect').value,role=workerCalendarRoleForKey(key),name=$('workerPersonSelect').value,container=$('workerRoleCalendars');
- if(!name){
-  container.innerHTML='<div class="wc-select-prompt">Select a worker to view their current vehicle bookings and free days.</div>';
-  return;
- }
- const color=workerCalendarColor(key,name),events=workerCalendarEvents(key,name),monthDays=new Date(year,month+1,0).getDate();
- const monthEvents=events.filter(e=>e.start<=workerCalendarDate(year,month,monthDays)&&e.end>=workerCalendarDate(year,month,1));
- const bookedVehicles=new Set(monthEvents.map(e=>e.v.id)).size,bookedDates=new Set();
- monthEvents.forEach(e=>{
-  const from=e.start>workerCalendarDate(year,month,1)?e.start:workerCalendarDate(year,month,1);
-  const to=e.end<workerCalendarDate(year,month,monthDays)?e.end:workerCalendarDate(year,month,monthDays);
-  for(let d=from;d<=to;d=workerCalendarAddDays(d,1))bookedDates.add(d);
- });
- const freeDays=monthDays-bookedDates.size;
- const firstOffset=(monthStart.getDay()+6)%7,gridStart=workerCalendarAddDays(workerCalendarDate(year,month,1),-firstOffset),cells=[];
+function workerCalendarSingleMarkup(key,name,year,month){
+ const role=workerCalendarRoleForKey(key),color=workerCalendarColor(key,name),events=workerCalendarEvents(key,name),monthDays=new Date(year,month+1,0).getDate();
+ const monthStart=new Date(year,month,1),monthFirst=workerCalendarDate(year,month,1),monthLast=workerCalendarDate(year,month,monthDays);
+ const monthEvents=events.filter(e=>e.start<=monthLast&&e.end>=monthFirst),bookedVehicles=new Set(monthEvents.map(e=>e.v.id)).size,bookedDates=new Set();
+ monthEvents.forEach(e=>{const from=e.start>monthFirst?e.start:monthFirst,to=e.end<monthLast?e.end:monthLast;for(let d=from;d<=to;d=workerCalendarAddDays(d,1))bookedDates.add(d)});
+ const freeDays=monthDays-bookedDates.size,firstOffset=(monthStart.getDay()+6)%7,gridStart=workerCalendarAddDays(monthFirst,-firstOffset),cells=[];
  for(let i=0;i<42;i++){
   const date=workerCalendarAddDays(gridStart,i),dObj=new Date(date+'T12:00:00'),dayEvents=events.filter(e=>e.start<=date&&e.end>=date),isOutside=dObj.getMonth()!==month,isToday=date===today();
   const chips=dayEvents.map(e=>`<button type="button" class="wc-event" style="--worker-color:${color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' · '+e.v.stage)}"><strong>${escapeHtml(e.v.registration||'Vehicle')}</strong><small>Job card: ${escapeHtml(e.v.jobcard||'—')} · ${escapeHtml(e.v.stage||'')}</small></button>`).join('');
   cells.push(`<div class="wc-day${isOutside?' outside':''}${isToday?' today':''}"><div class="wc-day-head"><span class="wc-day-number">${dObj.getDate()}</span></div>${chips||'<div class="wc-empty">Free</div>'}</div>`);
  }
- container.innerHTML=`<div class="wc-single-head"><i class="wc-dot" style="background:${color}"></i>${escapeHtml(name)} · ${role[0]}</div>
- <div class="wc-single-summary"><b>${bookedVehicles}</b> ongoing vehicle(s) scheduled this month · <b>${bookedDates.size}</b> booked day(s) · <b>${freeDays}</b> free day(s)</div>
- <div class="wc-calendar-scroll"><div class="wc-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div class="wc-grid" aria-label="${role[0]} availability calendar for ${escapeHtml(name)}">${cells.join('')}</div></div>`;
+ return `<section class="wc-role-calendar"><div class="wc-role-head"><h3><i class="wc-dot" style="background:${color};display:inline-block;vertical-align:middle"></i> ${escapeHtml(name)} · ${role[0]}</h3><span class="wc-role-summary">${bookedVehicles} ongoing vehicle(s) · ${bookedDates.size} booked day(s) · ${freeDays} free day(s)</span></div><div class="wc-calendar-scroll"><div class="wc-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div class="wc-grid" aria-label="${escapeHtml(role[0])} availability calendar for ${escapeHtml(name)}">${cells.join('')}</div></div></section>`;
+}
+function workerCalendarRender(){
+ const monthStart=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth(),1),year=monthStart.getFullYear(),month=monthStart.getMonth();
+ $('workerCalMonth').textContent=monthStart.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+ const key=$('workerRoleSelect').value,name=$('workerPersonSelect').value,container=$('workerRoleCalendars');
+ if(key==='all'){
+  const sections=workerCalendarRoles.flatMap(([role,workerKey])=>(workers[role]||[]).map(person=>workerCalendarSingleMarkup(workerKey,person,year,month)));
+  container.innerHTML=sections.length?sections.join(''):'<div class="wc-select-prompt">No workers have been added yet.</div>';return;
+ }
+ if(!name){container.innerHTML='<div class="wc-select-prompt">Select a worker to view their current vehicle bookings and free days.</div>';return;}
+ container.innerHTML=workerCalendarSingleMarkup(key,name,year,month);
 }
 $('workerCalPrev').onclick=()=>{workerCalendarMonth=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth()-1,1);workerCalendarRender()};
 $('workerCalNext').onclick=()=>{workerCalendarMonth=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth()+1,1);workerCalendarRender()};
@@ -333,15 +332,16 @@ $('workerRoleCalendars').addEventListener('click',e=>{const edit=e.target.closes
 
 function refreshWorkerConcernSelect(){
  const sel=$('workerConcernSelect'),current=sel.value,names=allWorkerNames();
- sel.innerHTML='<option value="">All workers</option>'+names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
- if(names.includes(current))sel.value=current;renderWorkerConcerns();
+ sel.innerHTML='<option value="">Select worker</option><option value="*">All workers</option>'+names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+ sel.value=names.includes(current)||current==='*'?current:'';renderWorkerConcerns();
 }
 function renderWorkerConcerns(){
  const selected=$('workerConcernSelect').value,items=[];
- vehicles.forEach(v=>asArray(v.concerns).forEach(c=>asArray(c.workers).forEach(name=>{if(!selected||selected===name)items.push({name,v,c});})));
+ if(!selected){$('workerConcernResults').innerHTML='';return;}
+ vehicles.forEach(v=>asArray(v.concerns).forEach(c=>asArray(c.workers).forEach(name=>{if(selected==='*'||selected===name)items.push({name,v,c});})));
  items.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'})||String(b.c.createdAt||'').localeCompare(String(a.c.createdAt||''))||String(a.v.registration).localeCompare(String(b.v.registration)));
  const grouped=new Map();items.forEach(x=>{if(!grouped.has(x.name))grouped.set(x.name,[]);grouped.get(x.name).push(x)});
- $('workerConcernResults').innerHTML=items.length?[...grouped.entries()].map(([name,rows])=>`<div class="sectiontitle">${escapeHtml(name)} <span class="hint">(${rows.length} concern(s))</span></div>${rows.map(({v,c})=>`<article class="worker-concern-card"><strong>${escapeHtml(v.registration||'Vehicle')}</strong><div class="concern-job">Job number: ${escapeHtml(v.jobcard||'—')} · ${escapeHtml(v.make||'')} ${escapeHtml(v.model||'')}</div><p>${escapeHtml(c.text)}</p></article>`).join('')}`).join(''):'<div class="empty">No repair concerns found for this worker.</div>';
+ $('workerConcernResults').innerHTML=items.length?[...grouped.entries()].map(([name,rows])=>`<div class="sectiontitle">${escapeHtml(name)} <span class="hint">(${rows.length} concern(s))</span></div>${rows.map(({v,c})=>`<article class="worker-concern-card"><strong>${escapeHtml(v.registration||'Vehicle')}</strong><div class="concern-job">Job number: ${escapeHtml(v.jobcard||'—')} · ${escapeHtml(v.make||'')} ${escapeHtml(v.model||'')}</div><p>${escapeHtml(c.text)}</p></article>`).join('')}`).join(''):'<div class="empty">No repair concerns found for this selection.</div>';
 }
 function renderWorkers(){workerCalendarRefreshPeople();refreshWorkerConcernSelect();}
 $('workersView').addEventListener('click',e=>{
@@ -367,12 +367,38 @@ function updateReportRangeCount(){
  $('reportRangeCount').textContent=!start||!end?'Select both dates to see the report count.':end<start?'End date must be on or after the start date.':`${list.length} completed vehicle(s) in the selected date range.`;
  $('exportDateRangeBtn').disabled=!list;
 }
-function exportDateRangeExcel(){
- const list=reportVehiclesInRange();if(!list){toast('Please select a valid start and end date');return}
+function buildCompletionReport(){
+ const list=reportVehiclesInRange();if(!list)return null;
  const esc=x=>escapeHtml(x??'');
- const rows=list.sort((a,b)=>completionDate(a).localeCompare(completionDate(b))).map(v=>{const assigned=['technician','panelbeater','painter','detailer'].flatMap(k=>asArray(v[k]));const history=asArray(v.stageHistory).map((h,i)=>{const next=asArray(v.stageHistory)[i+1];const end=next?.date||(isCompletedStage(v.stage)?completionDate(v):today());const days=Math.max(0,dayDiff(h.date,end)||0);return `${h.stage}: ${days} day(s) (${h.date||'—'} to ${end||'—'})`}).join(' | ');return `<tr><td>${esc(v.registration)}</td><td>${esc(v.make)}</td><td>${esc(v.model)}</td><td>${esc(v.jobcard)}</td><td>${esc(v.stage)}</td><td>${esc(formatDateTime(v.arrival))}</td><td>${esc(formatDateTime(v.completedAt||v.completedDate||v.updatedDate))}</td><td>${esc(formatDateTime(v.delivery))}</td><td>${esc([...new Set(assigned)].join(', '))}</td><td>${esc(history)}</td><td>${esc(v.notes||'')}</td></tr>`}).join('');
- const html=`<html><head><meta charset="utf-8"></head><body><h2>Bodyshop Tracker Completion Report</h2><p>Period: ${esc($('reportStartDate').value)} to ${esc($('reportEndDate').value)}</p><table border="1"><thead><tr><th>Vehicle Registration</th><th>Make</th><th>Model</th><th>Job Card</th><th>Final Stage</th><th>Vehicle In Date/Time</th><th>Completed / Job Not Done Date</th><th>Expected Delivery Date/Time</th><th>Assigned Workers</th><th>Full Repair Stage History</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
- download(`bodyshop-completion-report-${$('reportStartDate').value}-to-${$('reportEndDate').value}.xls`,'\ufeff'+html,'application/vnd.ms-excel;charset=utf-8');toast('Date-range Excel report exported');
+ const rows=[...list].sort((a,b)=>completionDate(a).localeCompare(completionDate(b))).map(v=>{
+  const assigned=['technician','panelbeater','painter','detailer'].flatMap(k=>asArray(v[k]));
+  const history=asArray(v.stageHistory).map((h,i)=>{const next=asArray(v.stageHistory)[i+1];const end=next?.date||(isCompletedStage(v.stage)?completionDate(v):today());const days=Math.max(0,dayDiff(h.date,end)||0);return `${h.stage}: ${days} day(s) (${h.date||'—'} to ${end||'—'})`}).join(' | ');
+  return `<tr><td>${esc(v.registration)}</td><td>${esc(v.make)}</td><td>${esc(v.model)}</td><td>${esc(v.jobcard)}</td><td>${esc(v.stage)}</td><td>${esc(formatDateTime(v.arrival))}</td><td>${esc(formatDateTime(v.completedAt||v.completedDate||v.updatedDate))}</td><td>${esc(formatDateTime(v.delivery))}</td><td>${esc([...new Set(assigned)].join(', '))}</td><td>${esc(history)}</td><td>${esc(v.notes||'')}</td></tr>`;
+ }).join('');
+ const html=`<!doctype html><html><head><meta charset="utf-8"><title>Bodyshop Tracker Completion Report</title><style>body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}th,td{border:1px solid #777;padding:6px;text-align:left;font-size:11px}th{background:#eee}</style></head><body><h2>Bodyshop Tracker Completion Report</h2><p>Period: ${esc($('reportStartDate').value)} to ${esc($('reportEndDate').value)}</p><table><thead><tr><th>Vehicle Registration</th><th>Make</th><th>Model</th><th>Job Card</th><th>Final Stage</th><th>Vehicle In Date/Time</th><th>Completed / Job Not Done Date</th><th>Expected Delivery Date/Time</th><th>Assigned Workers</th><th>Full Repair Stage History</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+ const filename=`bodyshop-completion-report-${$('reportStartDate').value}-to-${$('reportEndDate').value}.xls`;
+ return {html,filename,file:new File(['\\ufeff'+html],filename,{type:'application/vnd.ms-excel;charset=utf-8'})};
+}
+async function exportDateRangeExcel(){
+ const report=buildCompletionReport();if(!report){toast('Please select a valid start and end date');return}
+ const action=$('reportAction').value;
+ if(action==='download'){download(report.filename,'\\ufeff'+report.html,'application/vnd.ms-excel;charset=utf-8');toast('Excel report downloaded');return;}
+ if(action==='print'){
+  const win=window.open('','_blank');if(!win){toast('Allow pop-ups to print the report');return;}
+  win.document.open();win.document.write(report.html);win.document.close();win.onload=()=>win.print();return;
+ }
+ if(action==='share'||action==='email'){
+  if(navigator.canShare&&navigator.canShare({files:[report.file]})&&navigator.share){
+   try{await navigator.share({files:[report.file],title:'Bodyshop Tracker Completion Report',text:`Completion report: ${$('reportStartDate').value} to ${$('reportEndDate').value}`});}
+   catch(err){if(err.name!=='AbortError')toast('Sharing was not completed');}
+   return;
+  }
+  download(report.filename,'\\ufeff'+report.html,'application/vnd.ms-excel;charset=utf-8');
+  if(action==='email'){
+   window.location.href=`mailto:?subject=${encodeURIComponent('Bodyshop Tracker Completion Report')}&body=${encodeURIComponent('Please find the Bodyshop Tracker completion report attached. The report has been downloaded; attach the downloaded Excel file before sending.')}`;
+   toast('Report downloaded. Attach it to your new email.');
+  }else toast('File sharing is not supported here. Report downloaded instead.');
+ }
 }
 $('reportStartDate').addEventListener('change',updateReportRangeCount);$('reportEndDate').addEventListener('change',updateReportRangeCount);$('exportDateRangeBtn').addEventListener('click',exportDateRangeExcel);
 const APP_THEMES={
@@ -407,6 +433,6 @@ $('csvBtn').onclick=()=>{const cols=['registration','jobcard','make','model','st
  ['appVersion','appVersionModal'].forEach(id=>{const el=$(id);if(el)el.textContent=version;});
 })();
 applyTheme(localStorage.getItem('bodyshopTrackerTheme')||'magenta');
-setTimeout(()=>{const sp=$('splash');if(sp){sp.classList.add('hide');setTimeout(()=>sp.remove(),400)}},1600);fillSelect('stage',STAGES);fillSelect('stageFilter',STAGES,'All stages');load();refreshWorkers();refreshMakes();buildConcernWorkerPicker([]);renderConcernEditor();refreshWorkerConcernSelect();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw-v2.js?rev=20261105b',{updateViaCache:'none'}).catch(()=>{}));
+setTimeout(()=>{const sp=$('splash');if(sp){sp.classList.add('hide');setTimeout(()=>sp.remove(),400)}},1600);fillSelect('stage',STAGES);fillSelect('stageFilter',STAGES,'All stages');load();refreshWorkers();refreshMakes();buildConcernWorkerPicker([]);renderConcernEditor();refreshWorkerConcernSelect();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw-v2.js?rev=20261106a',{updateViaCache:'none'}).catch(()=>{}));
 </script></body></html>
 <!-- Deployment refresh: 2026-10-19 -->
