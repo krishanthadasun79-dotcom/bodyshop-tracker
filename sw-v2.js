@@ -1,4 +1,4 @@
-const CACHE='bodyshop-tracker-appicon-v2-20261105b';
+const CACHE='bodyshop-tracker-firebase-v3-20261107';
 const FILES=['./','./index.html','./bodyshop-icon-v2-192.png','./bodyshop-icon-v2-512.png','./bodyshop-startup-v2.png','./manifest-v2.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
