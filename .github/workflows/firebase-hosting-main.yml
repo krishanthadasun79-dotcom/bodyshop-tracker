@@ -1,0 +1,30 @@
+name: Deploy Bodyshop Tracker to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare website files
+        run: |
+          mkdir -p public
+          cp index.html sw-v2.js manifest-v2.webmanifest bodyshop-icon-v2-192.png bodyshop-icon-v2-512.png bodyshop-startup-v2.png public/
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BODYSHOP_TRACKER_EAC50 }}
+          projectId: bodyshop-tracker-eac50
+          channelId: live

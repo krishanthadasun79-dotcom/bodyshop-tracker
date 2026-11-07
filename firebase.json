@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "bodyshop-tracker-eac50",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
