@@ -19,7 +19,7 @@ jobs:
       - name: Prepare website files
         run: |
           mkdir -p public
-          cp index.html sw-v2.js manifest-v2.webmanifest bodyshop-icon-v2-192.png bodyshop-icon-v2-512.png bodyshop-startup-v2.png public/
+          cp index.html sw-v2.js manifest-v2.webmanifest bodyshop-icon-v2-192.png bodyshop-icon-v2-512.png bodyshop-startup-v2.png worker-availability-wall.html public/
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
