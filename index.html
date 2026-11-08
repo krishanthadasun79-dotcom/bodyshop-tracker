@@ -122,7 +122,37 @@ nav.tabbar {
 .auth-card{width:min(100%,420px);background:#fff;border:1px solid #f0d7e4;border-radius:18px;padding:24px;box-shadow:0 12px 40px #8f174f20}
 .auth-card h2{margin:0 0 8px;color:#8f174f}.auth-card p{font-size:13px;line-height:1.5;color:#786573}
 .auth-card label{display:block;font-size:12px;font-weight:700;color:#786573;margin:12px 0 5px}.auth-card .btn{width:100%;margin-top:12px}.auth-error{color:#a51f45!important;min-height:18px}
-#cloudStatus{font-size:10px;color:#ffe3f0;margin-left:auto}#signOutBtn{border:1px solid #ffffff66;background:#ffffff18;color:white;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:700}</style></head><body>
+#cloudStatus{font-size:10px;color:#ffe3f0;margin-left:auto}#signOutBtn{border:1px solid #ffffff66;background:#ffffff18;color:white;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:700}
+/* Worker availability: fixed worker column and horizontally scrollable Sunday-first dates */
+.wc-timeline-shell{width:100%;overflow-x:auto;overflow-y:visible;border:1px solid var(--line);border-radius:10px;background:#fff;max-height:65vh;overscroll-behavior-x:contain}
+.wc-timeline-head,.wc-timeline-row{display:flex;width:max-content;min-width:100%}
+.wc-timeline-head{position:sticky;top:0;z-index:5;background:#fff}
+.wc-worker-fixed{position:sticky;left:0;z-index:4;flex:0 0 175px;width:175px;min-width:175px;background:#fff;border-right:2px solid var(--line);padding:9px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.wc-worker-fixed strong{font-size:12px;display:flex;align-items:center;gap:6px}.wc-worker-fixed small{font-size:10px;color:var(--muted)}
+.wc-worker-head{z-index:6;font-weight:800;font-size:11px;color:var(--navy);background:#fff0f7}
+.wc-timeline-days{display:grid;grid-auto-flow:column;grid-auto-columns:76px;flex:none}
+.wc-timeline-date{height:52px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--muted);background:#fff}
+.wc-timeline-date b{font-size:14px;color:var(--text)}
+.wc-timeline-date.today{background:#ffe8e8}
+.wc-timeline-date.today b{background:#d92d3a;color:#fff;border-radius:50%;width:25px;height:25px;display:grid;place-items:center}
+.wc-timeline-cell{min-height:84px;padding:4px;border-right:1px solid #f0dfe7;border-bottom:1px solid #f0dfe7;display:flex;flex-direction:column;gap:3px;background:#fff;min-width:0}
+.wc-timeline-cell.today{background:#fff0f0}
+.wc-timeline-cell.on-leave{background:#ffe3e8}
+.wc-leave-label{font-size:9px;font-weight:900;color:#a51f45;text-align:center}
+.wc-timeline-cell .wc-event{margin:0;padding:4px 3px;border-left-width:3px;font-size:9px;line-height:1.2}
+.wc-timeline-cell .wc-event strong{font-size:9px;overflow-wrap:anywhere}
+.wc-timeline-cell .wc-event small{font-size:8px;line-height:1.15}
+.worker-roster-editor{display:grid;gap:7px;margin-top:12px}
+.worker-manage-row{padding:9px;background:#fff;border:1px solid var(--line);border-radius:9px}
+.worker-manage-name{display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:12px}
+.worker-manage-name small{font-size:10px;color:var(--muted)}
+.worker-leave-controls{display:flex;gap:6px;margin-top:7px}.worker-leave-controls input{min-width:0;flex:1;padding:7px;min-height:36px;font-size:12px}
+.worker-leave-list{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.worker-leave-list span{background:#ffe3e8;color:#9f2443;border-radius:6px;padding:3px 6px;font-size:10px}
+.worker-leave-list button{border:0;background:transparent;color:inherit;font-weight:900;padding:0 2px}
+.worker-remove-btn{margin-top:7px}
+@media(max-width:560px){.wc-worker-fixed{flex-basis:135px;width:135px;min-width:135px;padding:7px}.wc-timeline-days{grid-auto-columns:68px}.wc-timeline-cell{min-height:78px}}
+</style></head><body>
 <div id="splash" class="splash"><img src="bodyshop-startup-v2.png" alt="Bodyshop Tracker"><div>BODYSHOP TRACKER</div></div><div id="authGate" class="auth-gate"><form id="authForm" class="auth-card"><h2>Bodyshop Tracker</h2><p>Private sign-in for the owner account only.</p><label>Email address</label><input type="email" value="krishanthadasun79@gmail.com" readonly><label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" required placeholder="Your Firebase password"><button class="btn" id="authSubmit" type="submit">Sign in</button><button class="btn secondary" id="resetPassword" type="button">Reset password</button><p id="authError" class="auth-error" role="alert"></p></form></div><header><div class="top"><img src="bodyshop-icon-v2-192.png" alt=""><div><h1>Bodyshop Tracker</h1><p>Vehicle workflow · Worker assignments</p></div><span id="cloudStatus">Private cloud</span><button id="signOutBtn" type="button">Sign out</button></div></header>
 <main class="wrap">
 <section id="vehiclesView"><div class="stats"><div class="stat"><b id="totalCount">0</b><span>Total vehicles</span></div><div class="stat"><b id="activeCount">0</b><span>On time</span></div><div class="stat"><b id="overdueCount">0</b><span>Past due</span></div></div><div class="toolbar"><input id="search" placeholder="Search registration, job card, make or model"><button class="btn" id="addBtn">+ Add</button></div><div class="filters"><label>Repair stage<select id="stageFilter"><option value="">All stages</option></select></label><label>Worker<select id="workerFilter"><option value="">All workers</option></select></label><label>Expected delivery date<div class="datefilter-control"><input type="date" id="deliveryDateFilter" aria-label="Filter by expected delivery date"><button type="button" class="btn secondary small" id="clearDeliveryDateFilter">Clear</button></div></label></div><div id="vehicleList" class="cards"></div></section>
@@ -147,7 +177,7 @@ nav.tabbar {
 <section id="workersView" class="hidden">
 <div class="panel worker-calendar-panel">
 <h2>Worker availability calendars</h2>
-<p class="hint">Each calendar shows only that trade. A booking runs from vehicle arrival through expected delivery; overdue ongoing vehicles remain booked through today. Each worker has a consistent colour. Select a vehicle booking to edit it.</p>
+<p class="hint">Each row shows one worker, their ongoing vehicle count, and daily bookings. Scroll dates horizontally; the worker column stays fixed. Leave dates are marked unavailable. Select a vehicle booking to edit it.</p>
 <div class="wc-selectors">
 <label>Worker category<select id="workerRoleSelect" aria-label="Choose worker category"><option value="all">All workers</option><option value="technician">Technicians</option><option value="panelbeater">Panel beaters</option><option value="painter">Painters</option><option value="detailer">Detailers</option></select></label>
 <label>Choose worker<select id="workerPersonSelect" aria-label="Choose individual worker"><option value="">Select a worker</option></select></label>
@@ -171,11 +201,12 @@ const firebaseConfig={apiKey:"AIzaSyBru-9Tx7JQkxmtHH2xsTh8sqxZU-OFXI8",authDomai
 firebase.initializeApp(firebaseConfig);
 const fbAuth=firebase.auth(),fbDb=firebase.firestore(),trackerDoc=fbDb.collection("privateTracker").doc("ownerData"),OWNER_EMAIL="krishanthadasun79@gmail.com";
 let cloudReady=false,cloudUnsubscribe=null,cloudSaveTimer=null,applyingCloudData=false,lastCloudWrite="";
+let workerLeaveDays={};
 function setCloudStatus(s){const e=document.getElementById("cloudStatus");if(e)e.textContent=s}
 function showAuthGate(s){const g=document.getElementById("authGate");if(g)g.classList.remove("hidden");const e=document.getElementById("authError");if(e)e.textContent=s||""}
 function hideAuthGate(){document.getElementById("authGate")?.classList.add("hidden")}
-function cloudPayload(){return {vehicles,workers,makes,updatedAt:new Date().toISOString()}}
-function applyCloudData(d){applyingCloudData=true;vehicles=Array.isArray(d.vehicles)?d.vehicles:[];workers={...JSON.parse(JSON.stringify(DEFAULT_WORKERS)),...(d.workers||{})};makes=[...new Set([...DEFAULT_MAKES,...(Array.isArray(d.makes)?d.makes:[])])];localStorage.setItem("bodyshopTrackerDataV3",JSON.stringify({vehicles,workers,makes}));refreshWorkers();refreshMakes();buildConcernWorkerPicker([]);renderConcernEditor();refreshWorkerConcernSelect();render();applyingCloudData=false}
+function cloudPayload(){return {vehicles,workers,makes,workerLeaveDays,updatedAt:new Date().toISOString()}}
+function applyCloudData(d){applyingCloudData=true;vehicles=Array.isArray(d.vehicles)?d.vehicles:[];workers={...JSON.parse(JSON.stringify(DEFAULT_WORKERS)),...(d.workers||{})};workerLeaveDays=d.workerLeaveDays||{};normalizeWorkerRoster();makes=[...new Set([...DEFAULT_MAKES,...(Array.isArray(d.makes)?d.makes:[])])];localStorage.setItem("bodyshopTrackerDataV3",JSON.stringify({vehicles,workers,makes,workerLeaveDays}));refreshWorkers();refreshMakes();buildConcernWorkerPicker([]);renderConcernEditor();refreshWorkerConcernSelect();render();applyingCloudData=false}
 async function connectPrivateCloud(user){if(cloudUnsubscribe){cloudUnsubscribe();cloudUnsubscribe=null}cloudReady=false;setCloudStatus("Connecting…");if(user.email!==OWNER_EMAIL||!user.emailVerified){await fbAuth.signOut();showAuthGate(user.emailVerified?"This account is not authorized.":"Email is not verified. Verify it, then sign in again.");return}try{const snap=await trackerDoc.get();if(snap.exists){applyCloudData(snap.data())}else{await trackerDoc.set(cloudPayload())}cloudReady=true;hideAuthGate();setCloudStatus("Synced to private cloud");cloudUnsubscribe=trackerDoc.onSnapshot(doc=>{if(!doc.exists)return;const d=doc.data();if(d.updatedAt&&d.updatedAt===lastCloudWrite)return;applyCloudData(d);setCloudStatus("Synced to private cloud")},err=>{setCloudStatus("Cloud sync error");console.error(err)})}catch(err){setCloudStatus("Cloud unavailable");showAuthGate("Firestore is unavailable. Create the database and publish firestore.rules in Firebase Console.");console.error(err)}}
 fbAuth.onAuthStateChanged(user=>{if(!user){cloudReady=false;if(cloudUnsubscribe){cloudUnsubscribe();cloudUnsubscribe=null}showAuthGate("");setCloudStatus("Signed out")}else connectPrivateCloud(user)});
 document.addEventListener("DOMContentLoaded",()=>{document.getElementById("authForm")?.addEventListener("submit",async e=>{e.preventDefault();const b=document.getElementById("authSubmit");b.disabled=true;document.getElementById("authError").textContent="";try{await fbAuth.signInWithEmailAndPassword(OWNER_EMAIL,document.getElementById("authPassword").value);document.getElementById("authPassword").value=""}catch(err){document.getElementById("authError").textContent=err.code==="auth/invalid-credential"?"Email or password is incorrect.":err.message}finally{b.disabled=false}});document.getElementById("resetPassword")?.addEventListener("click",async()=>{try{await fbAuth.sendPasswordResetEmail(OWNER_EMAIL);document.getElementById("authError").textContent="Password reset email sent."}catch(err){document.getElementById("authError").textContent=err.message}});document.getElementById("signOutBtn")?.addEventListener("click",()=>fbAuth.signOut())});
@@ -183,11 +214,11 @@ const STAGES=['Waiting approval','Waiting Job card','Waiting Labor','Tire change
 const STAGE_ICON={'Waiting approval':'📝','Waiting Job card':'🗂️','Waiting Labor':'⏳','Tire change & Balance / Wheel alignment':'🛞','Mechanical repair in progress':'⚙️','Disassembling':'🪛','Panel Beating':'🔨','Preparation':'🧽','Painting':'🎨','Reassembly':'🔩','Detailing':'✨','Waiting for parts':'📦','QC':'✅','Job not done':'🚧','Delivered':'🚗'};
 function stageLabel(stage){return `${STAGE_ICON[stage]?STAGE_ICON[stage]+' ':''}${stage}`;}
 const STAGE_CLASS={'Waiting approval':'stage-waiting','Waiting Job card':'stage-waiting','Waiting Labor':'stage-yellow','Tire change & Balance / Wheel alignment':'stage-align','Mechanical repair in progress':'stage-mechanical','Disassembling':'stage-green','Panel Beating':'stage-green','Reassembly':'stage-green','Preparation':'stage-purple','Painting':'stage-purple','Detailing':'stage-grey','Waiting for parts':'stage-yellow','QC':'stage-orange','Job not done':'stage-notdone','Delivered':'stage-delivered'};
-const DEFAULT_WORKERS={'Technicians':['Chamindu'],'Panel beaters':['Chathuranga','Maduranga','Uditha','Ravindu','Mahinda'],'Painters':['Yapa','Lanka','Kavishka','Madushan','Damith'],'Detailers':['Sathya','Vinodha','Thiraj']};
+const DEFAULT_WORKERS={'Technicians':['Chamindu'],'Panel beaters':['Chathuranga','Maduranga','Uditha','Ravindu','Mahinda'],'Painters':['Yapa','Lanka','Kavishka','Madushan','Damith'],'Detailers':['Sathya','Thiraj']};
 const DEFAULT_MAKES=['ACURA','ALFA ROMEO','ASTON MARTIN','AUDI','BENTLEY','BMW','BYD','CADILLAC','CHANGAN','CHEVROLET','CHRYSLER','CITROËN','DAEWOO','DAIHATSU','DATSUN','DODGE','FERRARI','FIAT','FORD','GEELY','GMC','GREAT WALL','HAVAL','HONDA','HUMMER','HYUNDAI','ISUZU','JAGUAR','JEEP','KIA','LAMBORGHINI','LAND ROVER','LEXUS','MAHINDRA','MASERATI','MAZDA','MERCEDES-BENZ','MG','MINI','MITSUBISHI','MORRIS','NISSAN','OPEL','PERODUA','PEUGEOT','PORSCHE','PROTON','RENAULT','ROLLS-ROYCE','ROVER','SAAB','ŠKODA','SUBARU','SUZUKI','TATA','TESLA','TOYOTA','VAUXHALL','VOLKSWAGEN','VOLVO'];
 const isCompletedStage=stage=>stage==='Delivered'||stage==='Job not done';const $=id=>document.getElementById(id);const asArray=v=>Array.isArray(v)?v:(v?[v]:[]);const pad=n=>String(n).padStart(2,'0');const today=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};const localDateTime=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`};const dateOnly=s=>String(s||'').slice(0,10);const toDateTimeInput=s=>{if(!s)return '';const t=String(s);return t.length>=16&&t[10]==='T'?t.slice(0,16):`${dateOnly(t)}T08:00`};const formatDateTime=s=>{if(!s)return '—';const t=String(s);const d=new Date(t.length===10?`${t}T00:00:00`:t);return Number.isNaN(d.getTime())?t:d.toLocaleString(undefined,{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})};const dayDiff=(a,b)=>{if(!a||!b)return null;return Math.round((new Date(dateOnly(b)+'T00:00:00')-new Date(dateOnly(a)+'T00:00:00'))/86400000)};const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let vehicles=[],workers=JSON.parse(JSON.stringify(DEFAULT_WORKERS)),makes=[...DEFAULT_MAKES],toastTimer;function canonicalStage(stage){if(stage==='Waiting approval or Job card')return 'Waiting Job card';if(stage==='Wheel alignment'||stage==='Tire change & Balance'||stage==='Tire change & Balance Wheel alignment'||stage==='Tire change & Balance / Wheel alignment')return 'Tire change & Balance / Wheel alignment';return STAGES.includes(stage)?stage:stage}function load(){try{const d=JSON.parse(localStorage.getItem('bodyshopTrackerDataV3')||'{}');vehicles=Array.isArray(d.vehicles)?d.vehicles:[];workers={...JSON.parse(JSON.stringify(DEFAULT_WORKERS)),...(d.workers||{})};Object.keys(workers).forEach(k=>workers[k]=[...new Set(workers[k])]);makes=[...new Set([...DEFAULT_MAKES,...(Array.isArray(d.makes)?d.makes:[])])];vehicles.forEach(v=>{['technician','panelbeater','painter','detailer'].forEach(k=>v[k]=asArray(v[k]));v.stage=canonicalStage(v.stage||STAGES[0]);if(!Array.isArray(v.stageHistory)||!v.stageHistory.length)v.stageHistory=[{stage:v.stage,date:v.updatedDate||v.arrival||today()}];v.stageHistory=v.stageHistory.map(h=>({...h,stage:canonicalStage(h.stage)}));if(v.notes===undefined)v.notes='';if(!Array.isArray(v.concerns))v.concerns=[];v.concerns=v.concerns.map((c,i)=>typeof c==='string'?{id:'legacy-'+i,workers:[],text:c,createdAt:''}:{id:c.id||('concern-'+i),workers:asArray(c.workers),text:c.text||'',createdAt:c.createdAt||''});});save();}catch(e){vehicles=[]}}
-function save(){const data={vehicles,workers,makes};localStorage.setItem("bodyshopTrackerDataV3",JSON.stringify(data));if(cloudReady&&!applyingCloudData){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(async()=>{try{lastCloudWrite=new Date().toISOString();await trackerDoc.set({...data,updatedAt:lastCloudWrite});setCloudStatus("Synced to private cloud")}catch(err){setCloudStatus("Cloud save failed");console.error(err)}},600)}}function repairDays(v){return Math.max(0,dayDiff(v.arrival,isCompletedStage(v.stage)?(v.completedDate||today()):today())||0)}function isOverdue(v){return !isCompletedStage(v.stage)&&v.delivery&&dayDiff(today(),v.delivery)<0}function fillSelect(id,items,placeholder){const el=$(id);el.innerHTML='';if(placeholder!==undefined){const o=document.createElement('option');o.value='';o.textContent=placeholder;el.append(o)}items.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;el.append(o)})}
+let vehicles=[],workers=JSON.parse(JSON.stringify(DEFAULT_WORKERS)),makes=[...DEFAULT_MAKES],toastTimer;function canonicalStage(stage){if(stage==='Waiting approval or Job card')return 'Waiting Job card';if(stage==='Wheel alignment'||stage==='Tire change & Balance'||stage==='Tire change & Balance Wheel alignment'||stage==='Tire change & Balance / Wheel alignment')return 'Tire change & Balance / Wheel alignment';return STAGES.includes(stage)?stage:stage}function load(){try{const d=JSON.parse(localStorage.getItem('bodyshopTrackerDataV3')||'{}');vehicles=Array.isArray(d.vehicles)?d.vehicles:[];workers={...JSON.parse(JSON.stringify(DEFAULT_WORKERS)),...(d.workers||{})};workerLeaveDays=d.workerLeaveDays||{};normalizeWorkerRoster();Object.keys(workers).forEach(k=>workers[k]=[...new Set(workers[k])]);makes=[...new Set([...DEFAULT_MAKES,...(Array.isArray(d.makes)?d.makes:[])])];vehicles.forEach(v=>{['technician','panelbeater','painter','detailer'].forEach(k=>v[k]=asArray(v[k]));v.stage=canonicalStage(v.stage||STAGES[0]);if(!Array.isArray(v.stageHistory)||!v.stageHistory.length)v.stageHistory=[{stage:v.stage,date:v.updatedDate||v.arrival||today()}];v.stageHistory=v.stageHistory.map(h=>({...h,stage:canonicalStage(h.stage)}));if(v.notes===undefined)v.notes='';if(!Array.isArray(v.concerns))v.concerns=[];v.concerns=v.concerns.map((c,i)=>typeof c==='string'?{id:'legacy-'+i,workers:[],text:c,createdAt:''}:{id:c.id||('concern-'+i),workers:asArray(c.workers),text:c.text||'',createdAt:c.createdAt||''});});save();}catch(e){vehicles=[]}}
+function save(){const data={vehicles,workers,makes,workerLeaveDays};localStorage.setItem("bodyshopTrackerDataV3",JSON.stringify(data));if(cloudReady&&!applyingCloudData){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(async()=>{try{lastCloudWrite=new Date().toISOString();await trackerDoc.set({...data,updatedAt:lastCloudWrite});setCloudStatus("Synced to private cloud")}catch(err){setCloudStatus("Cloud save failed");console.error(err)}},600)}}function repairDays(v){return Math.max(0,dayDiff(v.arrival,isCompletedStage(v.stage)?(v.completedDate||today()):today())||0)}function isOverdue(v){return !isCompletedStage(v.stage)&&v.delivery&&dayDiff(today(),v.delivery)<0}function fillSelect(id,items,placeholder){const el=$(id);el.innerHTML='';if(placeholder!==undefined){const o=document.createElement('option');o.value='';o.textContent=placeholder;el.append(o)}items.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;el.append(o)})}
 function selectedWorkers(key){return [...$(key+'Options').querySelectorAll('input:checked')].map(x=>x.value)}function setWorkers(key,values){const selected=asArray(values);$(key+'Options').querySelectorAll('input').forEach(el=>el.checked=selected.includes(el.value));updatePickerLabel(key)}function updatePickerLabel(key){const names=selectedWorkers(key),labels={technician:'technicians',panelbeater:'panel beaters',painter:'painters',detailer:'detailers'};$(key+'Picker').querySelector('summary').textContent=names.length?names.join(', '):'Select '+labels[key]}
 function buildMultiPicker(key,items){const root=$(key+'Options');root.innerHTML=items.map(name=>`<label><input type="checkbox" value="${escapeHtml(name)}"><span>${escapeHtml(name)}</span></label>`).join('');root.onchange=()=>updatePickerLabel(key);updatePickerLabel(key)}function refreshWorkers(){buildMultiPicker('technician',workers.Technicians||[]);buildMultiPicker('panelbeater',workers['Panel beaters']||[]);buildMultiPicker('painter',workers.Painters||[]);buildMultiPicker('detailer',workers.Detailers||[]);const wf=$('workerFilter'),old=wf.value;wf.innerHTML='<option value="">All workers</option>';Object.values(workers).flat().forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;wf.append(o)});wf.value=old}
 function refreshMakes(selected=''){fillSelect('make',makes,'Select make');if(selected&& !makes.includes(selected)){makes.push(selected);fillSelect('make',makes,'Select make')}if(selected)$('make').value=selected}
@@ -290,6 +321,13 @@ function renderStages(){ $('stageLegend').innerHTML=STAGES.map(s=>`<span class="
 let workerCalendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
 const WORKER_CAL_COLORS=['#2563eb','#0f9d78','#d97706','#a855f7','#db2777','#0891b2','#65a30d','#dc2626','#4f46e5','#c2410c','#0d9488','#9333ea','#be123c','#0369a1','#4d7c0f','#a16207','#7c3aed','#0284c7','#b45309','#15803d','#be185d','#a21caf','#047857','#c026d3','#ea580c','#1d4ed8','#0e7490','#9f1239','#166534','#6d28d9'];
 const workerCalendarRoles=[['Technicians','technician'],['Panel beaters','panelbeater'],['Painters','painter'],['Detailers','detailer']];
+function normalizeWorkerRoster(){
+ Object.keys(workers).forEach(role=>workers[role]=(workers[role]||[]).filter(n=>String(n).trim().toLowerCase()!=='vinodha'));
+ Object.keys(workerLeaveDays||{}).forEach(k=>{if(k.toLowerCase().endsWith('|vinodha'))delete workerLeaveDays[k]});
+}
+function workerLeaveKey(key,name){return key+'|'+name;}
+function getWorkerLeaveDays(key,name){return Array.isArray(workerLeaveDays[workerLeaveKey(key,name)])?workerLeaveDays[workerLeaveKey(key,name)]:[];}
+
 function workerCalendarRoleForKey(key){return workerCalendarRoles.find(x=>x[1]===key);}
 function workerCalendarColor(key,name){
  const roster=workerCalendarRoles.flatMap(([role,workerKey])=>(workers[role]||[]).map(person=>workerKey+'|'+person));
@@ -318,44 +356,32 @@ function workerCalendarRefreshPeople(){
  }
  workerCalendarRender();
 }
-function workerCalendarSingleMarkup(key,name,year,month){
- const role=workerCalendarRoleForKey(key),color=workerCalendarColor(key,name),events=workerCalendarEvents(key,name),monthDays=new Date(year,month+1,0).getDate();
- const monthStart=new Date(year,month,1),monthFirst=workerCalendarDate(year,month,1),monthLast=workerCalendarDate(year,month,monthDays);
- const monthEvents=events.filter(e=>e.start<=monthLast&&e.end>=monthFirst),bookedVehicles=new Set(monthEvents.map(e=>e.v.id)).size,bookedDates=new Set();
- monthEvents.forEach(e=>{const from=e.start>monthFirst?e.start:monthFirst,to=e.end<monthLast?e.end:monthLast;for(let d=from;d<=to;d=workerCalendarAddDays(d,1))bookedDates.add(d)});
- const freeDays=monthDays-bookedDates.size,firstOffset=(monthStart.getDay()+6)%7,gridStart=workerCalendarAddDays(monthFirst,-firstOffset),cells=[];
- for(let i=0;i<42;i++){
-  const date=workerCalendarAddDays(gridStart,i),dObj=new Date(date+'T12:00:00'),dayEvents=events.filter(e=>e.start<=date&&e.end>=date),isOutside=dObj.getMonth()!==month,isToday=date===today();
-  const chips=dayEvents.map(e=>`<button type="button" class="wc-event" style="--worker-color:${color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' · '+e.v.stage)}"><strong>${escapeHtml(e.v.registration||'Vehicle')}</strong><small>Job card: ${escapeHtml(e.v.jobcard||'—')} · ${escapeHtml(e.v.stage||'')}</small></button>`).join('');
-  cells.push(`<div class="wc-day${isOutside?' outside':''}${isToday?' today':''}"><div class="wc-day-head"><span class="wc-day-number">${dObj.getDate()}</span></div>${chips||'<div class="wc-empty">Free</div>'}</div>`);
- }
- return `<section class="wc-role-calendar"><div class="wc-role-head"><h3><i class="wc-dot" style="background:${color};display:inline-block;vertical-align:middle"></i> ${escapeHtml(name)} · ${role[0]}</h3><span class="wc-role-summary">${bookedVehicles} ongoing vehicle(s) · ${bookedDates.size} booked day(s) · ${freeDays} free day(s)</span></div><div class="wc-calendar-scroll"><div class="wc-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div class="wc-grid" aria-label="${escapeHtml(role[0])} availability calendar for ${escapeHtml(name)}">${cells.join('')}</div></div></section>`;
-}
-function workerCalendarAllMarkup(year,month){
- const monthDays=new Date(year,month+1,0).getDate(),monthStart=new Date(year,month,1),monthFirst=workerCalendarDate(year,month,1),monthLast=workerCalendarDate(year,month,monthDays);
- const roster=workerCalendarRoles.flatMap(([role,key])=>(workers[role]||[]).map(name=>({role,key,name,color:workerCalendarColor(key,name)})));
- const entries=roster.flatMap(person=>workerCalendarEvents(person.key,person.name).map(e=>({...e,person})));
- const monthEntries=entries.filter(e=>e.start<=monthLast&&e.end>=monthFirst),bookedVehicles=new Set(monthEntries.map(e=>e.v.id)).size,bookedDates=new Set();
- monthEntries.forEach(e=>{const from=e.start>monthFirst?e.start:monthFirst,to=e.end<monthLast?e.end:monthLast;for(let d=from;d<=to;d=workerCalendarAddDays(d,1))bookedDates.add(d)});
- const freeDays=monthDays-bookedDates.size,firstOffset=(monthStart.getDay()+6)%7,gridStart=workerCalendarAddDays(monthFirst,-firstOffset),cells=[];
- for(let i=0;i<42;i++){
-  const date=workerCalendarAddDays(gridStart,i),dObj=new Date(date+'T12:00:00'),dayEntries=entries.filter(e=>e.start<=date&&e.end>=date),isOutside=dObj.getMonth()!==month,isToday=date===today();
-  const chips=dayEntries.map(e=>`<button type="button" class="wc-event" style="--worker-color:${e.person.color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' · '+e.v.stage+' · '+e.person.name)}"><strong>${escapeHtml(e.v.registration||'Vehicle')}</strong><small>${escapeHtml(e.person.name)} · ${escapeHtml(e.person.role)} · ${escapeHtml(e.v.stage||'')}</small></button>`).join('');
-  cells.push(`<div class="wc-day${isOutside?' outside':''}${isToday?' today':''}"><div class="wc-day-head"><span class="wc-day-number">${dObj.getDate()}</span></div>${chips||'<div class="wc-empty">Free</div>'}</div>`);
- }
- const legend=roster.map(p=>`<span class="wc-legend-item"><i class="wc-dot" style="background:${p.color}"></i>${escapeHtml(p.name)} <small>(${escapeHtml(p.role)})</small></span>`).join('');
- return `<section class="wc-role-calendar"><div class="wc-role-head"><h3>All workers · Combined availability</h3><span class="wc-role-summary">${roster.length} worker(s) · ${bookedVehicles} vehicle(s) · ${bookedDates.size} booked day(s) · ${freeDays} free day(s)</span></div><div class="wc-legend">${legend}</div><div class="wc-calendar-scroll"><div class="wc-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div class="wc-grid" aria-label="Combined availability calendar for all workers">${cells.join('')}</div></div></section>`;
+function workerCalendarTimelineMarkup(roster,year,month){
+ const daysInMonth=new Date(year,month+1,0).getDate(),todayKey=today();
+ const dateHeaders=Array.from({length:daysInMonth},(_,i)=>{
+  const d=new Date(year,month,i+1),key=workerCalendarDate(year,month,i+1),weekday=d.toLocaleDateString(undefined,{weekday:'short'});
+  return `<div class="wc-timeline-date${key===todayKey?' today':''}"><span>${weekday}</span><b>${i+1}</b></div>`;
+ }).join('');
+ const rows=roster.map(person=>{
+  const events=workerCalendarEvents(person.key,person.name),leaves=new Set(getWorkerLeaveDays(person.key,person.name));
+  const ongoingCount=new Set(events.map(e=>e.v.id)).size;
+  const cells=Array.from({length:daysInMonth},(_,i)=>{
+   const key=workerCalendarDate(year,month,i+1),dayEvents=events.filter(e=>e.start<=key&&e.end>=key);
+   const chips=dayEvents.map(e=>`<button type="button" class="wc-event" style="--worker-color:${person.color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' · '+e.v.stage)}"><strong>${escapeHtml(e.v.registration||'Vehicle')}</strong><small>${escapeHtml(e.v.stage||'')}</small></button>`).join('');
+   const onLeave=leaves.has(key);
+   return `<div class="wc-timeline-cell${onLeave?' on-leave':''}${key===todayKey?' today':''}" title="${onLeave?'On leave':dayEvents.length+' vehicle booking(s)'}">${onLeave?'<span class="wc-leave-label">LEAVE</span>':''}${chips}</div>`;
+  }).join('');
+  return `<div class="wc-timeline-row"><div class="wc-worker-fixed"><strong><i class="wc-dot" style="background:${person.color}"></i>${escapeHtml(person.name)}</strong><small>${escapeHtml(person.role)} · ${ongoingCount} ongoing</small></div><div class="wc-timeline-days">${cells}</div></div>`;
+ }).join('');
+ return `<div class="wc-timeline-shell"><div class="wc-timeline-head"><div class="wc-worker-fixed wc-worker-head">Worker · ongoing vehicles</div><div class="wc-timeline-days">${dateHeaders}</div></div>${rows||'<div class="wc-select-prompt">No workers in this selection.</div>'}</div>`;
 }
 function workerCalendarRender(){
  const monthStart=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth(),1),year=monthStart.getFullYear(),month=monthStart.getMonth();
  $('workerCalMonth').textContent=monthStart.toLocaleDateString(undefined,{month:'long',year:'numeric'});
- const key=$('workerRoleSelect').value,name=$('workerPersonSelect').value,container=$('workerRoleCalendars');
- if(key==='all'){
-  const hasWorkers=workerCalendarRoles.some(([role])=>(workers[role]||[]).length);
-  container.innerHTML=hasWorkers?workerCalendarAllMarkup(year,month):'<div class="wc-select-prompt">No workers have been added yet.</div>';return;
- }
- if(!name){container.innerHTML='<div class="wc-select-prompt">Select a worker to view their current vehicle bookings and free days.</div>';return;}
- container.innerHTML=workerCalendarSingleMarkup(key,name,year,month);
+ const key=$('workerRoleSelect').value,name=$('workerPersonSelect').value;
+ let roster=workerCalendarRoles.flatMap(([role,k])=>(workers[role]||[]).map(person=>({role,key:k,name:person,color:workerCalendarColor(k,person)})));
+ if(key!=='all')roster=roster.filter(p=>p.key===key&&p.name===name);
+ $('workerRoleCalendars').innerHTML=roster.length?workerCalendarTimelineMarkup(roster,year,month):'<div class="wc-select-prompt">Select a worker or add workers to view availability.</div>';
 }
 $('workerCalPrev').onclick=()=>{workerCalendarMonth=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth()-1,1);workerCalendarRender()};
 $('workerCalNext').onclick=()=>{workerCalendarMonth=new Date(workerCalendarMonth.getFullYear(),workerCalendarMonth.getMonth()+1,1);workerCalendarRender()};
@@ -377,12 +403,31 @@ function renderWorkerConcerns(){
  const grouped=new Map();items.forEach(x=>{if(!grouped.has(x.name))grouped.set(x.name,[]);grouped.get(x.name).push(x)});
  $('workerConcernResults').innerHTML=items.length?[...grouped.entries()].map(([name,rows])=>`<div class="sectiontitle">${escapeHtml(name)} <span class="hint">(${rows.length} concern(s))</span></div>${rows.map(({v,c})=>`<article class="worker-concern-card"><strong>${escapeHtml(v.registration||'Vehicle')}</strong><div class="concern-job">Job number: ${escapeHtml(v.jobcard||'—')} · ${escapeHtml(v.make||'')} ${escapeHtml(v.model||'')}</div><p>${escapeHtml(c.text)}</p></article>`).join('')}`).join(''):'<div class="empty">No repair concerns found for this selection.</div>';
 }
-function renderWorkers(){workerCalendarRefreshPeople();refreshWorkerConcernSelect();}
+function renderWorkers(){workerCalendarRefreshPeople();refreshWorkerConcernSelect();renderWorkerManagement();}
+function renderWorkerManagement(){
+ const boxes=document.querySelectorAll('.worker-add-box');
+ boxes.forEach(box=>{
+  const btn=box.querySelector('[data-add-worker]');if(!btn)return;
+  const key=btn.dataset.addWorker,role=workerCalendarRoleForKey(key),names=workers[role?.[0]]||[];
+  let list=box.querySelector('.worker-roster-editor');
+  if(!list){list=document.createElement('div');list.className='worker-roster-editor';box.appendChild(list);}
+  list.innerHTML=names.map(name=>{
+   const days=getWorkerLeaveDays(key,name).sort();
+   return `<div class="worker-manage-row"><div class="worker-manage-name"><strong>${escapeHtml(name)}</strong><small>${days.length} leave day(s) recorded</small></div><div class="worker-leave-controls"><input type="date" aria-label="Leave date for ${escapeHtml(name)}" data-leave-date="${escapeHtml(key)}|${escapeHtml(name)}"><button type="button" class="btn secondary small" data-add-leave="${escapeHtml(key)}|${escapeHtml(name)}">Add leave</button></div><div class="worker-leave-list">${days.map(d=>`<span>${escapeHtml(d)} <button type="button" aria-label="Remove leave ${escapeHtml(d)}" data-remove-leave="${escapeHtml(key)}|${escapeHtml(name)}|${escapeHtml(d)}">×</button></span>`).join('')}</div><button type="button" class="btn danger small worker-remove-btn" data-remove-worker="${escapeHtml(key)}|${escapeHtml(name)}">Remove worker</button></div>`;
+  }).join('')||'<div class="hint">No workers added yet.</div>';
+ });
+}
 $('workersView').addEventListener('click',e=>{
+ const addLeave=e.target.closest('[data-add-leave]');
+ if(addLeave){const [key,name]=addLeave.dataset.addLeave.split('|'),field=addLeave.parentElement.querySelector('input[type="date"]'),date=field.value;if(!date){toast('Choose a leave date');return}const id=workerLeaveKey(key,name),days=getWorkerLeaveDays(key,name);if(!days.includes(date))workerLeaveDays[id]=[...days,date].sort();save();renderWorkers();toast('Leave day saved');return;}
+ const removeLeave=e.target.closest('[data-remove-leave]');
+ if(removeLeave){const [key,name,date]=removeLeave.dataset.removeLeave.split('|'),id=workerLeaveKey(key,name);workerLeaveDays[id]=getWorkerLeaveDays(key,name).filter(d=>d!==date);save();renderWorkers();toast('Leave day removed');return;}
+ const remove=e.target.closest('[data-remove-worker]');
+ if(remove){const [key,name]=remove.dataset.removeWorker.split('|'),role=workerCalendarRoleForKey(key);if(!confirm(`Remove ${name} from the worker list?`))return;workers[role[0]]=(workers[role[0]]||[]).filter(n=>n!==name);delete workerLeaveDays[workerLeaveKey(key,name)];save();refreshWorkers();renderWorkers();renderWorkerManagement();toast('Worker removed');return;}
  const b=e.target.closest('[data-add-worker]');if(!b)return;
  const key=b.dataset.addWorker,role={technician:'Technicians',panelbeater:'Panel beaters',painter:'Painters',detailer:'Detailers'}[key],input=$('add-'+key),name=input.value.trim().replace(/\s+/g,' ');
- if(!name){toast('Enter a worker name');return}if((workers[role]||[]).some(n=>n.toLowerCase()===name.toLowerCase())){toast('Worker already exists');return}
- workers[role].push(name);save();refreshWorkers();renderWorkers();input.value='';toast('Worker added');
+ if(!name){toast('Enter a worker name');return}if(name.toLowerCase()==='vinodha'){toast('This worker is not available in the directory');return}if((workers[role]||[]).some(n=>n.toLowerCase()===name.toLowerCase())){toast('Worker already exists');return}
+ workers[role].push(name);save();refreshWorkers();renderWorkers();renderWorkerManagement();input.value='';toast('Worker added');
 });
 function renderMakes(){}$('addMakeBtn').onclick=()=>{const m=$('newMake').value.trim().toUpperCase();if(!m){toast('Enter a vehicle brand');return}if(makes.some(x=>x.toUpperCase()===m)){toast('Brand already exists');return}makes.push(m);makes.sort();save();refreshMakes();renderMakes();$('newMake').value='';toast('Make added')};
 function reportVehiclesInRange(){
@@ -409,7 +454,37 @@ function buildCompletionReport(){
   const history=asArray(v.stageHistory).map((h,i)=>{const next=asArray(v.stageHistory)[i+1];const end=next?.date||(isCompletedStage(v.stage)?completionDate(v):today());const days=Math.max(0,dayDiff(h.date,end)||0);return `${h.stage}: ${days} day(s) (${h.date||'—'} to ${end||'—'})`}).join(' | ');
   return `<tr><td>${esc(v.registration)}</td><td>${esc(v.make)}</td><td>${esc(v.model)}</td><td>${esc(v.jobcard)}</td><td>${esc(v.stage)}</td><td>${esc(formatDateTime(v.arrival))}</td><td>${esc(formatDateTime(v.completedAt||v.completedDate||v.updatedDate))}</td><td>${esc(formatDateTime(v.delivery))}</td><td>${esc([...new Set(assigned)].join(', '))}</td><td>${esc(history)}</td><td>${esc(v.notes||'')}</td></tr>`;
  }).join('');
- const html=`<!doctype html><html><head><meta charset="utf-8"><title>Bodyshop Tracker Completion Report</title><style>body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}th,td{border:1px solid #777;padding:6px;text-align:left;font-size:11px}th{background:#eee}</style></head><body><h2>Bodyshop Tracker Completion Report</h2><p>Period: ${esc($('reportStartDate').value)} to ${esc($('reportEndDate').value)}</p><table><thead><tr><th>Vehicle Registration</th><th>Make</th><th>Model</th><th>Job Card</th><th>Final Stage</th><th>Vehicle In Date/Time</th><th>Completed / Job Not Done Date</th><th>Expected Delivery Date/Time</th><th>Assigned Workers</th><th>Full Repair Stage History</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+ const html=`<!doctype html><html><head><meta charset="utf-8"><title>Bodyshop Tracker Completion Report</title><style>body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}th,td{border:1px solid #777;padding:6px;text-align:left;font-size:11px}th{background:#eee}
+/* Worker availability: fixed worker column and horizontally scrollable Sunday-first dates */
+.wc-timeline-shell{width:100%;overflow-x:auto;overflow-y:visible;border:1px solid var(--line);border-radius:10px;background:#fff;max-height:65vh;overscroll-behavior-x:contain}
+.wc-timeline-head,.wc-timeline-row{display:flex;width:max-content;min-width:100%}
+.wc-timeline-head{position:sticky;top:0;z-index:5;background:#fff}
+.wc-worker-fixed{position:sticky;left:0;z-index:4;flex:0 0 175px;width:175px;min-width:175px;background:#fff;border-right:2px solid var(--line);padding:9px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.wc-worker-fixed strong{font-size:12px;display:flex;align-items:center;gap:6px}.wc-worker-fixed small{font-size:10px;color:var(--muted)}
+.wc-worker-head{z-index:6;font-weight:800;font-size:11px;color:var(--navy);background:#fff0f7}
+.wc-timeline-days{display:grid;grid-auto-flow:column;grid-auto-columns:76px;flex:none}
+.wc-timeline-date{height:52px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--muted);background:#fff}
+.wc-timeline-date b{font-size:14px;color:var(--text)}
+.wc-timeline-date.today{background:#ffe8e8}
+.wc-timeline-date.today b{background:#d92d3a;color:#fff;border-radius:50%;width:25px;height:25px;display:grid;place-items:center}
+.wc-timeline-cell{min-height:84px;padding:4px;border-right:1px solid #f0dfe7;border-bottom:1px solid #f0dfe7;display:flex;flex-direction:column;gap:3px;background:#fff;min-width:0}
+.wc-timeline-cell.today{background:#fff0f0}
+.wc-timeline-cell.on-leave{background:#ffe3e8}
+.wc-leave-label{font-size:9px;font-weight:900;color:#a51f45;text-align:center}
+.wc-timeline-cell .wc-event{margin:0;padding:4px 3px;border-left-width:3px;font-size:9px;line-height:1.2}
+.wc-timeline-cell .wc-event strong{font-size:9px;overflow-wrap:anywhere}
+.wc-timeline-cell .wc-event small{font-size:8px;line-height:1.15}
+.worker-roster-editor{display:grid;gap:7px;margin-top:12px}
+.worker-manage-row{padding:9px;background:#fff;border:1px solid var(--line);border-radius:9px}
+.worker-manage-name{display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:12px}
+.worker-manage-name small{font-size:10px;color:var(--muted)}
+.worker-leave-controls{display:flex;gap:6px;margin-top:7px}.worker-leave-controls input{min-width:0;flex:1;padding:7px;min-height:36px;font-size:12px}
+.worker-leave-list{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.worker-leave-list span{background:#ffe3e8;color:#9f2443;border-radius:6px;padding:3px 6px;font-size:10px}
+.worker-leave-list button{border:0;background:transparent;color:inherit;font-weight:900;padding:0 2px}
+.worker-remove-btn{margin-top:7px}
+@media(max-width:560px){.wc-worker-fixed{flex-basis:135px;width:135px;min-width:135px;padding:7px}.wc-timeline-days{grid-auto-columns:68px}.wc-timeline-cell{min-height:78px}}
+</style></head><body><h2>Bodyshop Tracker Completion Report</h2><p>Period: ${esc($('reportStartDate').value)} to ${esc($('reportEndDate').value)}</p><table><thead><tr><th>Vehicle Registration</th><th>Make</th><th>Model</th><th>Job Card</th><th>Final Stage</th><th>Vehicle In Date/Time</th><th>Completed / Job Not Done Date</th><th>Expected Delivery Date/Time</th><th>Assigned Workers</th><th>Full Repair Stage History</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
  const filename=`bodyshop-completion-report-${$('reportStartDate').value}-to-${$('reportEndDate').value}.xls`;
  return {html,filename,file:new File(['\\ufeff'+html],filename,{type:'application/vnd.ms-excel;charset=utf-8'})};
 }
@@ -455,7 +530,7 @@ $('jobNotDoneCount').closest('.stat').addEventListener('click',()=>{completedSta
 ['totalCount','activeCount','overdueCount'].forEach((id,i)=>$(id).closest('.stat').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();['all','inprogress','overdue'][i]===vehicleStatFilter?null:null;vehicleStatFilter=['all','inprogress','overdue'][i];render()}}));
 ['completedCount','deliveredCount','jobNotDoneCount'].forEach((id,i)=>$(id).closest('.stat').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();completedStatFilter=['all','delivered','notdone'][i];renderCompleted()}}));
 $('stagesTab').onclick=()=>{renderStages();showView('stages')};$('workersTab').onclick=()=>{renderWorkers();showView('workers')};$('settingsTab').onclick=()=>{renderSettings();showView('settings')};$('search').oninput=render;$('completedSearch').oninput=renderCompleted;$('stageFilter').onchange=render;$('workerFilter').onchange=render;$('deliveryDateFilter').onchange=render;$('clearDeliveryDateFilter').onclick=()=>{$('deliveryDateFilter').value='';render()};$('arrival').onchange=updateDurationPreview;$('delivery').onchange=updateDurationPreview;
-$('exportBtn').onclick=()=>{download('bodyshop-tracker-backup-'+today()+'.json',JSON.stringify({app:'Bodyshop Tracker',version:3,exportedAt:new Date().toISOString(),vehicles,workers,makes},null,2),'application/json');toast('Backup exported')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text()),arr=Array.isArray(d)?d:d.vehicles;if(!Array.isArray(arr))throw Error('Invalid');if(!confirm(`Import ${arr.length} vehicle records and directory settings? This replaces current data.`))return;vehicles=arr;workers={...JSON.parse(JSON.stringify(DEFAULT_WORKERS)),...(d.workers||{})};makes=[...new Set([...DEFAULT_MAKES,...(d.makes||[])])];vehicles.forEach(v=>{['technician','panelbeater','painter','detailer'].forEach(k=>v[k]=asArray(v[k]));if(!Array.isArray(v.stageHistory))v.stageHistory=[{stage:v.stage,date:v.updatedDate||v.arrival||today()}];v.notes=v.notes||'';if(!Array.isArray(v.concerns))v.concerns=[];v.concerns=v.concerns.map((c,i)=>typeof c==='string'?{id:'legacy-'+i,workers:[],text:c,createdAt:''}:{id:c.id||('concern-'+i),workers:asArray(c.workers),text:c.text||'',createdAt:c.createdAt||''})});save();refreshWorkers();refreshMakes();render();toast('Backup imported')}catch(err){alert('Could not import a valid tracker backup')}e.target.value=''};
+$('exportBtn').onclick=()=>{download('bodyshop-tracker-backup-'+today()+'.json',JSON.stringify({app:'Bodyshop Tracker',version:3,exportedAt:new Date().toISOString(),vehicles,workers,makes,workerLeaveDays},null,2),'application/json');toast('Backup exported')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text()),arr=Array.isArray(d)?d:d.vehicles;if(!Array.isArray(arr))throw Error('Invalid');if(!confirm(`Import ${arr.length} vehicle records and directory settings? This replaces current data.`))return;vehicles=arr;workers={...JSON.parse(JSON.stringify(DEFAULT_WORKERS)),...(d.workers||{})};workerLeaveDays=d.workerLeaveDays||{};normalizeWorkerRoster();makes=[...new Set([...DEFAULT_MAKES,...(d.makes||[])])];vehicles.forEach(v=>{['technician','panelbeater','painter','detailer'].forEach(k=>v[k]=asArray(v[k]));if(!Array.isArray(v.stageHistory))v.stageHistory=[{stage:v.stage,date:v.updatedDate||v.arrival||today()}];v.notes=v.notes||'';if(!Array.isArray(v.concerns))v.concerns=[];v.concerns=v.concerns.map((c,i)=>typeof c==='string'?{id:'legacy-'+i,workers:[],text:c,createdAt:''}:{id:c.id||('concern-'+i),workers:asArray(c.workers),text:c.text||'',createdAt:c.createdAt||''})});save();refreshWorkers();refreshMakes();render();toast('Backup imported')}catch(err){alert('Could not import a valid tracker backup')}e.target.value=''};
 $('csvBtn').onclick=()=>{const cols=['registration','jobcard','make','model','stage','technician','panelbeater','painter','detailer','arrival','delivery','notes','concerns','completedDate'];const rows=[cols.join(','),...vehicles.map(v=>cols.map(k=>{const val=['technician','panelbeater','painter','detailer'].includes(k)?asArray(v[k]).join('; '):(k==='concerns'?asArray(v.concerns).map(c=>`${asArray(c.workers).join(', ')}: ${c.text}`).join(' | '):(v[k]||''));return '"'+String(val).replace(/"/g,'""')+'"'}).join(','))];download('bodyshop-vehicles-'+today()+'.csv','\ufeff'+rows.join('\r\n'),'text/csv;charset=utf-8');toast('CSV exported')};function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 // Build identifier is derived from the app's own CSS and JavaScript, so it changes automatically when either changes.
 (function setAutomaticBuildVersion(){
