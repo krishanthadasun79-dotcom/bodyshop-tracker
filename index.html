@@ -161,8 +161,9 @@ nav.tabbar {
 .availability-worker-option{display:flex;align-items:center;gap:12px;padding:18px 14px;border-radius:0;color:#e5ecdf;font-size:clamp(16px,4.4vw,22px);font-weight:450;cursor:pointer;min-height:64px;border-bottom:1px solid #394438}
 .availability-worker-option:last-child{border-bottom:0}
 .availability-worker-option:hover{background:#2b382a}
-.availability-worker-option input{appearance:none;order:2;margin-left:auto;width:22px;height:22px;min-width:22px;margin-top:0;margin-bottom:0;border:2px solid #c0cbb9;border-radius:50%;background:transparent;flex:none}
-.availability-worker-option input:checked{border:6px solid #00d52a;background:transparent}
+.availability-worker-option input{appearance:none;order:2;margin-left:auto;width:22px;height:22px;min-width:22px;margin-top:0;margin-bottom:0;border:2px solid #c0cbb9;border-radius:5px;background:transparent;flex:none;display:grid;place-content:center}
+.availability-worker-option input:checked{border:2px solid #00d52a;background:#00d52a}
+.availability-worker-option input:checked::after{content:'✓';color:#202b20;font-size:16px;font-weight:900;line-height:1}
 .availability-worker-option.reset-option{border-bottom:1px solid #475447;font-weight:550;color:#fff}
 .availability-worker-option.all-option{border-bottom:1px solid #394438}
 
@@ -416,22 +417,51 @@ $('workerCalToday').onclick=()=>{
 };
 $('workerConcernSelect').onchange=renderWorkerConcerns;
 $('concernWorkerSelectTrigger').addEventListener('click',()=>{const menu=$('concernWorkerSelectMenu');menu.classList.toggle('hidden');$('concernWorkerSelectTrigger').setAttribute('aria-expanded',String(!menu.classList.contains('hidden')));});
-$('concernWorkerSelectMenu').addEventListener('change',e=>{const item=e.target.closest('[data-concern-worker-value]');if(!item)return;$('workerConcernSelect').value=item.dataset.concernWorkerValue;refreshWorkerConcernSelect();renderWorkerConcerns();$('concernWorkerSelectMenu').classList.add('hidden');$('concernWorkerSelectTrigger').setAttribute('aria-expanded','false');});
+$('concernWorkerSelectMenu').addEventListener('change',e=>{
+ const input=e.target.closest('[data-concern-worker-value]');if(!input)return;
+ const names=[...new Set(Object.values(workers).flat().filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
+ if(input.dataset.concernWorkerValue===''){
+  selectedConcernWorkers=[];
+ }else if(input.dataset.concernWorkerValue==='*'){
+  selectedConcernWorkers=input.checked?['*']:[];
+ }else{
+  const name=input.dataset.concernWorkerValue;
+  if(selectedConcernWorkers.includes('*'))selectedConcernWorkers=names.filter(n=>n!==name);
+  else if(input.checked){if(!selectedConcernWorkers.includes(name))selectedConcernWorkers.push(name);}
+  else selectedConcernWorkers=selectedConcernWorkers.filter(n=>n!==name);
+  selectedConcernWorkers.sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
+  if(names.length&&selectedConcernWorkers.length===names.length)selectedConcernWorkers=['*'];
+ }
+ refreshWorkerConcernSelect();
+});
 $('workerRoleCalendars').addEventListener('click',e=>{const edit=e.target.closest('[data-wc-edit]');if(edit)editVehicle(edit.dataset.wcEdit)});
 
+let selectedConcernWorkers=[];
 function refreshWorkerConcernSelect(){
- const sel=$('workerConcernSelect'),current=sel.value,names=allWorkerNames();
- sel.innerHTML='<option value="">Select worker</option><option value="*">All workers</option>'+names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
- sel.value=names.includes(current)||current==='*'?current:'';
- const menu=$('concernWorkerSelectMenu'),value=sel.value;
- menu.innerHTML='<label class="availability-worker-option reset-option">Select worker<input type="radio" name="concern-worker-choice" data-concern-worker-value="" '+(!value?'checked':'')+'></label><label class="availability-worker-option all-option">All workers<input type="radio" name="concern-worker-choice" data-concern-worker-value="*" '+(value==='*'?'checked':'')+'></label>'+names.map(n=>`<label class="availability-worker-option">${escapeHtml(n)}<input type="radio" name="concern-worker-choice" data-concern-worker-value="${escapeHtml(n)}" ${value===n?'checked':''}></label>`).join('');
- $('concernWorkerSelectTrigger').innerHTML=(value==='*'?'All workers':value?escapeHtml(value):'Select worker')+' <span>▾</span>';
+ const names=[...new Set(Object.values(workers).flat().filter(Boolean))]
+  .sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
+ selectedConcernWorkers=selectedConcernWorkers.includes('*')?['*']:
+  selectedConcernWorkers.filter(name=>names.includes(name));
+ const sel=$('workerConcernSelect');
+ sel.innerHTML='<option value="">Select worker</option><option value="*">All workers</option>'+ 
+  names.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+ [...sel.options].forEach(option=>{option.selected=option.value==='*'?selectedConcernWorkers.includes('*'):selectedConcernWorkers.includes(option.value)});
+ const menu=$('concernWorkerSelectMenu'),all=selectedConcernWorkers.includes('*');
+ const checkbox=(label,choice,checked,extraClass='')=>
+  `<label class="availability-worker-option ${extraClass}">${label}<input type="checkbox" data-concern-worker-value="${escapeHtml(choice)}" ${checked?'checked':''}></label>`;
+ menu.innerHTML=checkbox('Select worker','',!selectedConcernWorkers.length,'reset-option')+
+  checkbox('All workers','*',all,'all-option')+
+  names.map(name=>checkbox(escapeHtml(name),name,all||selectedConcernWorkers.includes(name))).join('');
+ const label=all?'All workers':selectedConcernWorkers.length?selectedConcernWorkers.map(escapeHtml).join(', '):'Select worker';
+ $('concernWorkerSelectTrigger').innerHTML=label+' <span>▾</span>';
  renderWorkerConcerns();
 }
 function renderWorkerConcerns(){
- const selected=$('workerConcernSelect').value,items=[];
- if(!selected){$('workerConcernResults').innerHTML='';return;}
- vehicles.forEach(v=>asArray(v.concerns).forEach(c=>asArray(c.workers).forEach(name=>{if(selected==='*'||selected===name)items.push({name,v,c});})));
+ const selected=selectedConcernWorkers,items=[];
+ if(!selected.length){$('workerConcernResults').innerHTML='';return;}
+ vehicles.forEach(v=>asArray(v.concerns).forEach(c=>asArray(c.workers).forEach(name=>{
+  if(selected.includes('*')||selected.includes(name))items.push({name,v,c});
+ })));
  items.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'})||String(b.c.createdAt||'').localeCompare(String(a.c.createdAt||''))||String(a.v.registration).localeCompare(String(b.v.registration)));
  const grouped=new Map();items.forEach(x=>{if(!grouped.has(x.name))grouped.set(x.name,[]);grouped.get(x.name).push(x)});
  $('workerConcernResults').innerHTML=items.length?[...grouped.entries()].map(([name,rows])=>`<div class="sectiontitle">${escapeHtml(name)} <span class="hint">(${rows.length} concern(s))</span></div>${rows.map(({v,c})=>`<article class="worker-concern-card"><strong>${escapeHtml(v.registration||'Vehicle')}</strong><div class="concern-job">Job number: ${escapeHtml(v.jobcard||'—')} · ${escapeHtml(v.make||'')} ${escapeHtml(v.model||'')}</div><p>${escapeHtml(c.text)}</p></article>`).join('')}`).join(''):'<div class="empty">No repair concerns found for this selection.</div>';
