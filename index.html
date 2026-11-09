@@ -154,19 +154,6 @@ nav.tabbar {
 @media(max-width:560px){.wc-worker-fixed{flex-basis:105px;width:105px;min-width:105px;padding:5px}.wc-worker-fixed strong{font-size:10px;overflow-wrap:anywhere}.wc-worker-fixed small{font-size:9px}.wc-timeline-days{grid-auto-columns:68px}.wc-timeline-cell{min-height:78px}}
 .worker-add-form{display:grid;grid-template-columns:minmax(0,2fr) minmax(150px,1fr) auto;gap:8px;align-items:end;margin-top:10px}
 .worker-add-form label,.worker-availability-form label{display:block;font-size:12px;font-weight:750;color:var(--navy)}
-.availability-worker-picker{position:relative;margin-top:5px}
-.availability-worker-trigger{width:100%;min-height:40px;text-align:left;padding:9px 11px;border:1px solid #cbd6e2;border-radius:9px;background:#fff;color:var(--text);font:inherit;font-size:14px;display:flex;justify-content:space-between;align-items:center}
-.availability-worker-menu{position:absolute;z-index:60;top:calc(100% + 3px);left:0;right:0;max-height:min(62vh,520px);overflow:auto;background:#202b20;border:1px solid #354335;border-radius:34px;box-shadow:0 12px 30px #0005;padding:8px}
-.availability-worker-menu.hidden{display:none}
-.availability-worker-option{display:flex;align-items:center;gap:12px;padding:18px 14px;border-radius:0;color:#e5ecdf;font-size:clamp(16px,4.4vw,22px);font-weight:450;cursor:pointer;min-height:64px;border-bottom:1px solid #394438}
-.availability-worker-option:last-child{border-bottom:0}
-.availability-worker-option:hover{background:#2b382a}
-.availability-worker-option input{appearance:none;order:2;margin-left:auto;width:22px;height:22px;min-width:22px;margin-top:0;margin-bottom:0;border:2px solid #c0cbb9;border-radius:5px;background:transparent;flex:none;display:grid;place-content:center}
-.availability-worker-option input:checked{border:2px solid #00d52a;background:#00d52a}
-.availability-worker-option input:checked::after{content:'✓';color:#202b20;font-size:16px;font-weight:900;line-height:1}
-.availability-worker-option.reset-option{border-bottom:1px solid #475447;font-weight:550;color:#fff}
-.availability-worker-option.all-option{border-bottom:1px solid #394438}
-
 .worker-add-form input,.worker-add-form select,.worker-availability-form select{margin-top:5px}
 .worker-availability-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}
 .worker-date-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px}
@@ -211,10 +198,10 @@ nav.tabbar {
  <div class="wc-controls"><button type="button" class="btn secondary small" id="workerCalPrev" aria-label="Previous month">‹</button><strong id="workerCalMonth" class="wc-month-label"></strong><button type="button" class="btn secondary small" id="workerCalNext" aria-label="Next month">›</button><button type="button" class="btn small" id="workerCalToday">Today</button></div>
 <div id="workerRoleCalendars"></div>
 </div>
-<div class="panel worker-concerns-panel"><h2>Worker repair concerns</h2><label class="worker-concern-select">Select worker<div class="availability-worker-picker" id="concernWorkerSelectPicker"><button type="button" class="availability-worker-trigger" id="concernWorkerSelectTrigger" aria-expanded="false">Select worker <span>▾</span></button><div class="availability-worker-menu hidden" id="concernWorkerSelectMenu"></div></div><select id="workerConcernSelect" aria-hidden="true" tabindex="-1" style="display:none"><option value="">Select worker</option><option value="*">All workers</option></select></label><div id="workerConcernResults"></div></div><div class="panel worker-add-panel"><h2>Add workers</h2><p class="hint">Enter a worker name, select the category, then add. New names are appended to the end of that category.</p>
+<div class="panel worker-concerns-panel"><h2>Worker repair concerns</h2><label class="worker-concern-select">Select worker<select id="workerConcernSelect"><option value="">Select worker</option><option value="*">All workers</option></select></label><div id="workerConcernResults"></div></div><div class="panel worker-add-panel"><h2>Add workers</h2><p class="hint">Enter a worker name, select the category, then add. New names are appended to the end of that category.</p>
 <div class="worker-add-form"><label>Worker name<input id="newWorkerName" placeholder="Enter worker name" autocapitalize="words"></label><label>Worker category<select id="newWorkerCategory"><option value="technician">Technician</option><option value="panelbeater">Panel beater</option><option value="painter">Painter</option><option value="detailer">Detailer</option></select></label><button type="button" class="btn" id="addWorkerBtn">Add worker</button></div></div>
 <div class="panel worker-add-panel"><h2>Worker leave and OFF management</h2><p class="hint">Select one worker, choose LEAVE or OFF, select a month, then tick one or more dates and press Add. Existing dates for the selected worker appear below and can be cancelled individually.</p>
-<div class="worker-availability-form"><label>Employee<div class="availability-worker-picker" id="availabilityWorkerPicker"><button type="button" class="availability-worker-trigger" id="availabilityWorkerTrigger" aria-expanded="false">Select worker <span>▾</span></button><div class="availability-worker-menu hidden" id="availabilityWorkerMenu"></div></div><select id="availabilityWorkerSelect" multiple aria-hidden="true" tabindex="-1" style="display:none"><option value="">Select worker</option><option value="*">All workers</option></select><span class="hint">Choose one or more workers using the circles. “Select worker” clears the selection.</span></label><label>Type<select id="availabilityTypeSelect"><option value="LEAVE">LEAVE</option><option value="OFF">OFF</option></select></label><label>Month<select id="availabilityMonthSelect"></select></label></div>
+<div class="worker-availability-form"><label>Employee<select id="availabilityWorkerSelect" aria-label="Select employee"><option value="">Select worker</option><option value="*">All workers</option></select></label><label>Type<select id="availabilityTypeSelect"><option value="LEAVE">LEAVE</option><option value="OFF">OFF</option></select></label><label>Month<select id="availabilityMonthSelect"></select></label></div>
 <div id="availabilityDateGrid" class="worker-date-grid"><div class="hint">Select an employee to choose dates.</div></div>
 <div class="worker-availability-actions"><span id="availabilitySelectedCount" class="hint">0 dates selected</span><button type="button" class="btn" id="addAvailabilityDatesBtn">Add selected dates</button></div>
 <div class="sectiontitle">SELECTED EMPLOYEE'S LEAVE AND OFF DAYS</div><div id="workerAvailabilityList" class="worker-availability-list"><span class="hint">Select an employee to view saved dates.</span></div>
@@ -416,52 +403,17 @@ $('workerCalToday').onclick=()=>{
  });
 };
 $('workerConcernSelect').onchange=renderWorkerConcerns;
-$('concernWorkerSelectTrigger').addEventListener('click',()=>{const menu=$('concernWorkerSelectMenu');menu.classList.toggle('hidden');$('concernWorkerSelectTrigger').setAttribute('aria-expanded',String(!menu.classList.contains('hidden')));});
-$('concernWorkerSelectMenu').addEventListener('change',e=>{
- const input=e.target.closest('[data-concern-worker-value]');if(!input)return;
- const names=[...new Set(Object.values(workers).flat().filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
- if(input.dataset.concernWorkerValue===''){
-  selectedConcernWorkers=[];
- }else if(input.dataset.concernWorkerValue==='*'){
-  selectedConcernWorkers=input.checked?['*']:[];
- }else{
-  const name=input.dataset.concernWorkerValue;
-  if(selectedConcernWorkers.includes('*'))selectedConcernWorkers=names.filter(n=>n!==name);
-  else if(input.checked){if(!selectedConcernWorkers.includes(name))selectedConcernWorkers.push(name);}
-  else selectedConcernWorkers=selectedConcernWorkers.filter(n=>n!==name);
-  selectedConcernWorkers.sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
-  if(names.length&&selectedConcernWorkers.length===names.length)selectedConcernWorkers=['*'];
- }
- refreshWorkerConcernSelect();
-});
 $('workerRoleCalendars').addEventListener('click',e=>{const edit=e.target.closest('[data-wc-edit]');if(edit)editVehicle(edit.dataset.wcEdit)});
 
-let selectedConcernWorkers=[];
 function refreshWorkerConcernSelect(){
- const names=[...new Set(Object.values(workers).flat().filter(Boolean))]
-  .sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
- selectedConcernWorkers=selectedConcernWorkers.includes('*')?['*']:
-  selectedConcernWorkers.filter(name=>names.includes(name));
- const sel=$('workerConcernSelect');
- sel.innerHTML='<option value="">Select worker</option><option value="*">All workers</option>'+ 
-  names.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
- [...sel.options].forEach(option=>{option.selected=option.value==='*'?selectedConcernWorkers.includes('*'):selectedConcernWorkers.includes(option.value)});
- const menu=$('concernWorkerSelectMenu'),all=selectedConcernWorkers.includes('*');
- const checkbox=(label,choice,checked,extraClass='')=>
-  `<label class="availability-worker-option ${extraClass}">${label}<input type="checkbox" data-concern-worker-value="${escapeHtml(choice)}" ${checked?'checked':''}></label>`;
- menu.innerHTML=checkbox('Select worker','',!selectedConcernWorkers.length,'reset-option')+
-  checkbox('All workers','*',all,'all-option')+
-  names.map(name=>checkbox(escapeHtml(name),name,all||selectedConcernWorkers.includes(name))).join('');
- const label=all?'All workers':selectedConcernWorkers.length?selectedConcernWorkers.map(escapeHtml).join(', '):'Select worker';
- $('concernWorkerSelectTrigger').innerHTML=label+' <span>▾</span>';
- renderWorkerConcerns();
+ const sel=$('workerConcernSelect'),current=sel.value,names=allWorkerNames();
+ sel.innerHTML='<option value="">Select worker</option><option value="*">All workers</option>'+names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+ sel.value=names.includes(current)||current==='*'?current:'';renderWorkerConcerns();
 }
 function renderWorkerConcerns(){
- const selected=selectedConcernWorkers,items=[];
- if(!selected.length){$('workerConcernResults').innerHTML='';return;}
- vehicles.forEach(v=>asArray(v.concerns).forEach(c=>asArray(c.workers).forEach(name=>{
-  if(selected.includes('*')||selected.includes(name))items.push({name,v,c});
- })));
+ const selected=$('workerConcernSelect').value,items=[];
+ if(!selected){$('workerConcernResults').innerHTML='';return;}
+ vehicles.forEach(v=>asArray(v.concerns).forEach(c=>asArray(c.workers).forEach(name=>{if(selected==='*'||selected===name)items.push({name,v,c});})));
  items.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'})||String(b.c.createdAt||'').localeCompare(String(a.c.createdAt||''))||String(a.v.registration).localeCompare(String(b.v.registration)));
  const grouped=new Map();items.forEach(x=>{if(!grouped.has(x.name))grouped.set(x.name,[]);grouped.get(x.name).push(x)});
  $('workerConcernResults').innerHTML=items.length?[...grouped.entries()].map(([name,rows])=>`<div class="sectiontitle">${escapeHtml(name)} <span class="hint">(${rows.length} concern(s))</span></div>${rows.map(({v,c})=>`<article class="worker-concern-card"><strong>${escapeHtml(v.registration||'Vehicle')}</strong><div class="concern-job">Job number: ${escapeHtml(v.jobcard||'—')} · ${escapeHtml(v.make||'')} ${escapeHtml(v.model||'')}</div><p>${escapeHtml(c.text)}</p></article>`).join('')}`).join(''):'<div class="empty">No repair concerns found for this selection.</div>';
@@ -475,12 +427,14 @@ function workerAvailabilityMonthOptions(){
  select.value=opts.some(x=>x.value===current)?current:`${now.getFullYear()}-${pad(now.getMonth()+1)}`;
 }
 function selectedAvailabilityWorkers(){
- const select=$('availabilityWorkerSelect'),selected=[...select.selectedOptions].map(o=>o.value);
+ const selected=$('availabilityWorkerSelect').value;
  const people=workerCalendarRoles.flatMap(([role,key])=>(workers[role]||[]).map(name=>({key,name,role})));
- if(selected.includes('*'))return people;
- return people.filter(p=>selected.includes(p.name));
+ if(selected==='*')return people;
+ if(!selected)return [];
+ const [key,...parts]=selected.split('|'),name=parts.join('|');
+ return people.filter(p=>p.key===key&&p.name===name);
 }
-function renderAvailabilityDateGrid(){
+ function renderAvailabilityDateGrid(){
  const people=selectedAvailabilityWorkers(),month=$('availabilityMonthSelect').value,grid=$('availabilityDateGrid');
  if(!people.length||!month){grid.innerHTML='<div class="hint availability-prompt">Select an employee and month to choose dates.</div>';$('availabilitySelectedCount').textContent='0 dates selected';return;}
  const [year,monthNum]=month.split('-').map(Number),days=new Date(year,monthNum,0).getDate(),weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -498,50 +452,25 @@ function renderWorkerAvailabilityList(){
  list.innerHTML=items.length?items.map(x=>`<span class="worker-availability-chip${x.type==='OFF'?' off':''}">${escapeHtml(x.person.name)} · ${x.type} ${escapeHtml(x.date)} <button type="button" title="Cancel ${x.type} for ${escapeHtml(x.person.name)} on ${escapeHtml(x.date)}" aria-label="Cancel ${x.type} for ${escapeHtml(x.person.name)} ${escapeHtml(x.date)}" data-remove-availability="${x.person.key}|${escapeHtml(x.person.name)}|${x.type}|${x.date}">×</button></span>`).join(''):'<span class="hint">No LEAVE or OFF days recorded for the selected employees.</span>';
 }
  function renderWorkerManagement(){
- const select=$('availabilityWorkerSelect'),current=[...select.selectedOptions].map(o=>o.value);
- const names=allWorkerNames();
- select.innerHTML='<option value="">Select worker</option><option value="*">All workers</option>'+names.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
- const valid=current.filter(v=>v==='*'||names.includes(v));
- if(valid.includes('*'))select.querySelector('option[value="*"]').selected=true;
- else [...select.options].forEach(o=>{if(o.value)o.selected=valid.includes(o.value);});
- const menu=$('availabilityWorkerMenu');
- menu.innerHTML='<label class="availability-worker-option reset-option">Select worker<input type="checkbox" data-availability-reset></label><label class="availability-worker-option all-option">All workers<input type="checkbox" data-availability-all '+(valid.includes('*')?'checked':'')+'></label>'+names.map(name=>`<label class="availability-worker-option">${escapeHtml(name)}<input type="checkbox" data-availability-person="${escapeHtml(name)}" ${valid.includes(name)&&!valid.includes('*')?'checked':''}></label>`).join('');
- const selectedNames=valid.includes('*')?['All workers']:valid.filter(Boolean);
- $('availabilityWorkerTrigger').innerHTML=(selectedNames.length?escapeHtml(selectedNames.join(', ')):'Select worker')+' <span>▾</span>';
+ const select=$('availabilityWorkerSelect'),current=select.value;
+ const people=workerCalendarRoles.flatMap(([role,key])=>(workers[role]||[]).map(name=>({key,name,role})));
+ people.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'})||a.role.localeCompare(b.role));
+ select.innerHTML='<option value="">Select worker</option><option value="*">All workers</option>'+people.map(p=>`<option value="${p.key}|${escapeHtml(p.name)}">${escapeHtml(p.name)} · ${p.role}</option>`).join('');
+ select.value=current==='*'||people.some(p=>`${p.key}|${p.name}`===current)?current:'';
  workerAvailabilityMonthOptions();renderAvailabilityDateGrid();renderWorkerAvailabilityList();
 }
-function syncAvailabilityWorkerPicker(){
- const select=$('availabilityWorkerSelect'),menu=$('availabilityWorkerMenu');
- const reset=menu.querySelector('[data-availability-reset]'),all=menu.querySelector('[data-availability-all]');
- if(reset?.checked){
-  [...select.options].forEach(o=>o.selected=false);
-  menu.querySelectorAll('input[type=checkbox]').forEach(i=>i.checked=false);
-  reset.checked=false;
- }else if(all?.checked){
-  [...select.options].forEach(o=>o.selected=o.value==='*');
-  menu.querySelectorAll('[data-availability-person]').forEach(i=>i.checked=false);
- }else{
-  const selected=[...menu.querySelectorAll('[data-availability-person]:checked')].map(i=>i.dataset.availabilityPerson);
-  [...select.options].forEach(o=>o.selected=selected.includes(o.value));
-  if(all)all.checked=false;
- }
- const selected=[...select.selectedOptions].map(o=>o.value);
- $('availabilityWorkerTrigger').innerHTML=(selected.includes('*')?'All workers':selected.length?escapeHtml(selected.join(', ')):'Select worker')+' <span>▾</span>';
- renderAvailabilityDateGrid();renderWorkerAvailabilityList();
-}
-$('addWorkerBtn').addEventListener('click',()=>{
+ $('addWorkerBtn').addEventListener('click',()=>{
  const input=$('newWorkerName'),name=input.value.trim().replace(/\s+/g,' '),key=$('newWorkerCategory').value;
  const role=workerCalendarRoleForKey(key)?.[0];
  if(!name){toast('Enter a worker name');return;}
  if(name.toLowerCase()==='vinodha'){toast('This worker is not available in the directory');return;}
  if(!role){toast('Select a valid worker category');return;}
  if((workers[role]||[]).some(n=>n.toLowerCase()===name.toLowerCase())){toast('Worker already exists in this category');return;}
- workers[role].push(name);save();input.value='';refreshWorkers();renderWorkers();renderWorkerManagement();$('availabilityWorkerMenu').querySelectorAll('[data-availability-person]').forEach(i=>{if(i.dataset.availabilityPerson===name)i.checked=true;});syncAvailabilityWorkerPicker();toast('Worker added to '+role);
+ workers[role].push(name);save();input.value='';refreshWorkers();renderWorkers();renderWorkerManagement();$('availabilityWorkerSelect').value=`${key}|${name}`;renderAvailabilityDateGrid();renderWorkerAvailabilityList();toast('Worker added to '+role);
 });
-$('availabilityWorkerTrigger').addEventListener('click',()=>{$('availabilityWorkerMenu').classList.toggle('hidden');$('availabilityWorkerTrigger').setAttribute('aria-expanded',String(!$('availabilityWorkerMenu').classList.contains('hidden')));});
-$('availabilityWorkerMenu').addEventListener('change',syncAvailabilityWorkerPicker);
-document.addEventListener('click',e=>{if(!$('availabilityWorkerPicker').contains(e.target)){$('availabilityWorkerMenu').classList.add('hidden');$('availabilityWorkerTrigger').setAttribute('aria-expanded','false');}if(!$('concernWorkerSelectPicker').contains(e.target)){$('concernWorkerSelectMenu').classList.add('hidden');$('concernWorkerSelectTrigger').setAttribute('aria-expanded','false');}});
-
+$('availabilityWorkerSelect').addEventListener('change',()=>{
+ renderAvailabilityDateGrid();renderWorkerAvailabilityList();
+});
 $('availabilityMonthSelect').addEventListener('change',renderAvailabilityDateGrid);
 $('availabilityDateGrid').addEventListener('change',e=>{if(e.target.matches('[data-availability-date]')){$('availabilitySelectedCount').textContent=`${$('availabilityDateGrid').querySelectorAll('[data-availability-date]:checked').length} dates selected`;}});
 $('addAvailabilityDatesBtn').addEventListener('click',()=>{
