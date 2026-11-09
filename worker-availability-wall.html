@@ -13,7 +13,7 @@ body{display:flex;flex-direction:column;background:#fff8fc}
 .top{height:54px;flex:0 0 54px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 14px;background:linear-gradient(110deg,#8f174f,#c51f5d);color:#fff}
 .brand{min-width:0}.brand strong{display:block;font-size:clamp(14px,1.15vw,22px);letter-spacing:.2px}.brand small{font-size:clamp(9px,.65vw,12px);opacity:.88}
 .top-right{display:flex;align-items:center;gap:12px;text-align:right}.month{font-size:clamp(14px,1.3vw,24px);font-weight:800;white-space:nowrap}.status{font-size:10px;white-space:nowrap;opacity:.9}
-#calendar{flex:1 1 auto;min-height:0;width:100%;display:grid;grid-template-columns:clamp(100px,9.2vw,178px) repeat(var(--days,42),minmax(0,1fr));grid-template-rows:34px repeat(var(--workers,14),minmax(0,1fr));background:#fff;overflow:hidden}
+#calendar{flex:1 1 auto;min-height:0;width:100%;display:grid;grid-template-columns:clamp(100px,9.2vw,178px) repeat(var(--days,28),minmax(0,1fr));grid-template-rows:34px repeat(var(--workers,14),minmax(0,1fr));background:#fff;overflow:hidden}
 .day-head,.worker-head,.day-cell,.worker-cell{min-width:0;min-height:0;border-right:1px solid #eadfe5;border-bottom:1px solid #eadfe5}
 .corner{display:flex;align-items:center;padding:0 8px;background:#f8e7ef;color:#8f174f;font-size:clamp(9px,.7vw,13px);font-weight:800;white-space:nowrap}
 .day-head{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:#f8e7ef;color:#70435a;overflow:hidden}
@@ -50,8 +50,8 @@ body{display:flex;flex-direction:column;background:#fff8fc}
  <div class="brand"><strong>BODYSHOP TRACKER · WORKER AVAILABILITY</strong><small>Live read-only wall display</small></div>
  <div class="top-right"><div id="monthLabel" class="month">Connecting…</div><div id="cloudStatus" class="status">Connecting to cloud…</div></div>
 </div>
-<div id="calendar" aria-label="Rolling worker availability calendar showing yesterday through 31 days ahead"></div>
-<div class="footer"><span id="workerCount">Waiting for worker data</span><span>Yesterday + 31 days ahead · Updates automatically · Read only</span></div>
+<div id="calendar" aria-label="Worker availability calendar showing last week, this week and next two weeks"></div>
+<div class="footer"><span id="workerCount">Waiting for worker data</span><span>Last Week + This Week + Next 2 Weeks · Sunday-start weeks · Updates automatically · Read only</span></div>
 <div id="authGate" class="auth"><form id="authForm" class="auth-card">
  <h2>Worker Availability Display</h2><p>Sign in with the authorized Bodyshop Tracker owner account. This page is read-only.</p>
  <label>Email address</label><input type="email" value="krishanthadasun79@gmail.com" readonly>
@@ -107,10 +107,18 @@ function render(data){
  workerLeaveDays=data.workerLeaveDays||{};
  workerOffDays=data.workerOffDays||{};
  const roster=workerRoster();
- // Rolling window: yesterday, today, and the next 31 days (33 dates total).
- const startDate=new Date();startDate.setHours(0,0,0,0);startDate.setDate(startDate.getDate()-1);
- const days=33;
- const endDate=new Date(startDate);endDate.setDate(endDate.getDate()+days-1);
+
+ // Four complete Sunday-to-Saturday weeks:
+ // last week, this week, and the next two weeks.
+ // Recalculating every minute automatically advances the view each Sunday.
+ const startDate=new Date();
+ startDate.setHours(0,0,0,0);
+ const daysSinceSunday=startDate.getDay(); // Sunday = 0
+ startDate.setDate(startDate.getDate()-daysSinceSunday-7);
+ const days=28;
+
+ const endDate=new Date(startDate);
+ endDate.setDate(endDate.getDate()+days-1);
  const monthLabel=d=>d.toLocaleDateString(undefined,{month:"long"});
  const startMonth=monthLabel(startDate),endMonth=monthLabel(endDate);
  const startYear=startDate.getFullYear(),endYear=endDate.getFullYear();
@@ -119,7 +127,7 @@ function render(data){
  else if(startYear===endYear) heading=`${startMonth} - ${endMonth} ${endYear}`;
  else heading=`${startMonth} ${startYear} - ${endMonth} ${endYear}`;
  $("monthLabel").textContent=heading;
- $("workerCount").textContent=`${roster.length} workers · 33-day rolling view`;
+ $("workerCount").textContent=`${roster.length} workers · 4-week rolling view`;
  const calendar=$("calendar");
  calendar.style.setProperty("--days",days);
  calendar.style.setProperty("--workers",Math.max(roster.length,1));
