@@ -128,7 +128,7 @@ function workerEvents(person){
 const STAGE_ICON={"Waiting approval":"📝","Waiting Job card":"🗂️","Waiting Labor":"⏳","Tire change & Balance / Wheel alignment":"🛞","Mechanical repair in progress":"⚙️","Disassembling":"🪛","Panel Beating":"🔨","Preparation":"🧽","Painting":"🎨","Reassembly":"🔩","Detailing":"✨","Waiting for parts":"📦","QC":"✅","Job not done":"🚧","Delivered":"🚗"};
 const STAGE_WORKER_KEY={"Waiting approval":"technician","Waiting Job card":"technician","Waiting Labor":"technician","Tire change & Balance / Wheel alignment":"technician","Mechanical repair in progress":"technician","Disassembling":"panelbeater","Panel Beating":"panelbeater","Preparation":"panelbeater","Painting":"painter","Reassembly":"panelbeater","Detailing":"detailer","Waiting for parts":"technician","QC":"technician","Job not done":"technician","Delivered":"detailer"};
 let rotationTimer=null,rotationRunning=false,rotationPage="calendar",vehiclePageIndex=0;
-const CALENDAR_HOLD_MS=30000,VEHICLE_HOLD_MS=5000;
+const CALENDAR_HOLD_MS=30000,VEHICLE_HOLD_MS=10000;
 const roleLabels={technician:"Technicians",panelbeater:"Panel beaters",painter:"Painters",detailer:"Detailers"};
 function dateLabel(value){const raw=dateOnly(value);if(!raw)return "—";const d=new Date(raw+"T00:00:00");return Number.isNaN(d.getTime())?raw:d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});}
 function dayCount(a,b){if(!a||!b)return 0;const n=Math.round((new Date(dateOnly(b)+"T00:00:00")-new Date(dateOnly(a)+"T00:00:00"))/86400000);return Math.max(0,n||0);}
@@ -163,7 +163,7 @@ function render(data){
  const todayKey=today();
  const body=roster.map(person=>{const color=colorFor(roster,person),events=workerEvents(person),worker=`<div class="worker-cell" title="${escapeHtml(person.name)}"><i class="worker-dot" style="background:${color}"></i><span class="worker-name">${escapeHtml(person.name)}</span></div>`;
   const cells=dates.map(d=>{const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,classes=`day-cell${date===todayKey?" today":""}${d.getDate()===1?" month-start":""}`,status=leaveStatus(person.key,person.name,date),bookings=events.filter(e=>e.start<=date&&e.end>=date),statusHtml=status?`<div class="day-status${status==="OFF"?" off":""}">${status}</div>`:"";
-   if(!bookings.length)return `<div class="${classes}">${statusHtml||'<div class="empty-cell"></div>'}</div>`;
+   if(status||!bookings.length)return `<div class="${classes}">${statusHtml||'<div class="empty-cell"></div>'}</div>`;
    const cols=bookings.length===1?"single":(bookings.length>=3?"two-plus three-eligible":"two-plus"),boxes=bookings.map(e=>`<div class="vehicle-box" style="--worker-color:${color}" title="${escapeHtml(e.vehicle.registration||"Vehicle")} · ${escapeHtml(e.vehicle.stage||"")}"><span>${escapeHtml(e.vehicle.registration||"Vehicle")}</span></div>`).join("");
    return `<div class="${classes}">${statusHtml}<div class="vehicle-grid ${cols}">${boxes}</div></div>`;
   }).join("");return worker+cells;
