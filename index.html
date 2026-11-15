@@ -372,8 +372,8 @@ function workerCalendarRefreshPeople(){workerCalendarRender();}
   const ongoingCount=new Set(events.map(e=>e.v.id)).size;
   const cells=Array.from({length:daysInMonth},(_,i)=>{
    const key=workerCalendarDate(year,month,i+1),dayEvents=events.filter(e=>e.start<=key&&e.end>=key);
-   const chips=status?'':dayEvents.map(e=>`<button type="button" class="wc-event" style="--worker-color:${person.color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' · '+e.v.stage)}"><strong>${escapeHtml(e.v.registration||'Vehicle')}</strong><small>${escapeHtml(e.v.stage||'')}</small></button>`).join('');
    const status=offs.has(key)?'OFF':(leaves.has(key)?'LEAVE':'');
+   const chips=status?'':dayEvents.map(e=>`<button type="button" class="wc-event" style="--worker-color:${person.color}" data-wc-edit="${escapeHtml(e.v.id)}" title="${escapeHtml(e.v.registration+' · '+e.v.stage)}"><strong>${escapeHtml(e.v.registration||'Vehicle')}</strong><small>${escapeHtml(e.v.stage||'')}</small></button>`).join('');
    return `<div class="wc-timeline-cell${status?(status==='OFF'?' on-off':' on-leave'):''}${key===todayKey?' today':''}" title="${status||dayEvents.length+' vehicle booking(s)'}">${status?`<span class="wc-leave-label">${status}</span>`:''}${chips}</div>`;
   }).join('');
   return `<div class="wc-timeline-row"><div class="wc-worker-fixed"><strong><i class="wc-dot" style="background:${person.color}"></i>${escapeHtml(person.name)}</strong><small>${escapeHtml(person.role)} · ${ongoingCount} ongoing</small></div><div class="wc-timeline-days">${cells}</div></div>`;
