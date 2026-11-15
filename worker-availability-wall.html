@@ -43,14 +43,38 @@ body{display:flex;flex-direction:column;background:#fff8fc}
 .hidden{display:none!important}
 @media(min-width:2560px){.vehicle-grid.three-eligible{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-height:650px){.top{height:42px;flex-basis:42px}.footer{height:16px;flex-basis:16px}#calendar{grid-template-rows:28px repeat(var(--workers,14),minmax(0,1fr))}.worker-cell{padding:0 3px}.day-cell{padding:0}}
+
+.top-right{gap:10px}.presentation-controls{display:flex;align-items:center;gap:5px;order:0}
+.presentation-controls button{width:30px;height:30px;padding:0;border:1px solid #ffffff70;border-radius:7px;background:#ffffff20;color:#fff;font-size:15px;display:grid;place-items:center;cursor:pointer}
+.presentation-controls button:hover,.presentation-controls button:focus-visible{background:#ffffff42;outline:2px solid #fff;outline-offset:1px}
+#monthLabel{order:1}#cloudStatus{order:2}#vehicleSlides{display:none;flex:1 1 auto;min-height:0;overflow:hidden;padding:clamp(12px,2vw,30px);background:linear-gradient(145deg,#fff8fc,#f8edf3)}
+#vehicleSlides.active{display:flex;align-items:stretch;justify-content:center}#calendar.presentation-hidden{display:none}
+.vehicle-slide{width:100%;max-width:1800px;min-height:0;display:flex;flex-direction:column;gap:clamp(8px,1.2vh,16px);margin:auto}
+.slide-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:clamp(12px,1.5vw,22px);border-radius:16px;background:linear-gradient(110deg,#8f174f,#c51f5d);color:#fff;box-shadow:0 8px 24px #8f174f22}
+.slide-reg{font-size:clamp(28px,4vw,64px);font-weight:900;line-height:1.05}.slide-job{font-size:clamp(14px,1.5vw,22px);font-weight:700;opacity:.94;margin-top:8px}
+.slide-current{max-width:48%;text-align:right;font-size:clamp(16px,2vw,30px);font-weight:850;line-height:1.25}.slide-current small{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;opacity:.8;margin-bottom:5px}
+.slide-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.slide-date{padding:12px 16px;border-radius:12px;background:#fff;border:1px solid #ecd6e1;box-shadow:0 3px 12px #8f174f0b}
+.slide-date small{display:block;font-size:11px;font-weight:800;color:#8f174f;text-transform:uppercase;letter-spacing:.6px}.slide-date b{display:block;font-size:clamp(15px,1.5vw,23px);margin-top:4px;color:#30202a}
+.slide-section-title{font-size:clamp(13px,1.2vw,18px);font-weight:900;color:#8f174f;letter-spacing:.5px}
+.slide-history{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px;min-height:0}
+.stage-step{padding:10px 12px;background:#fff;border:1px solid #ead8e1;border-left:5px solid #c51f5d;border-radius:10px;min-width:0}
+.stage-step.current{background:#fff0f7;border-color:#d98aaf;box-shadow:0 3px 12px #8f174f12}
+.stage-step-head{display:flex;align-items:center;gap:8px;font-size:clamp(12px,1.05vw,16px);font-weight:850;line-height:1.25}.stage-step-icon{font-size:clamp(18px,1.7vw,26px);flex:none}
+.stage-step-meta{font-size:clamp(10px,.85vw,13px);color:#786573;margin-top:6px;line-height:1.35}.stage-step-workers{font-size:clamp(10px,.9vw,14px);font-weight:750;color:#493342;margin-top:6px;overflow-wrap:anywhere}
+.slide-footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-size:11px;color:#8b7180}
+@media(max-width:760px){.brand small{display:none}.status{display:none}.top{padding:5px 8px}.top-right{gap:6px}.presentation-controls button{width:27px;height:27px}.slide-heading{flex-direction:column}.slide-current{max-width:100%;text-align:left}.slide-history{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-height:620px){.slide-heading{padding:9px 13px}.slide-dates{gap:6px}.slide-date{padding:7px 10px}.stage-step{padding:7px 9px}.slide-history{gap:5px}}
+
 </style>
 </head>
 <body>
 <div class="top">
  <div class="brand"><strong>BODYSHOP TRACKER · WORKER AVAILABILITY</strong><small>Live read-only wall display</small></div>
- <div class="top-right"><div id="monthLabel" class="month">Connecting…</div><div id="cloudStatus" class="status">Connecting to cloud…</div></div>
+ <div class="top-right"><div class="presentation-controls" aria-label="Presentation controls">
+<button id="playBtn" type="button" aria-label="Play" title="Play">▶</button><button id="pauseBtn" type="button" aria-label="Pause" title="Pause">Ⅱ</button><button id="stopBtn" type="button" aria-label="Stop" title="Stop">■</button></div>
+<div id="monthLabel" class="month">Connecting…</div><div id="cloudStatus" class="status">Connecting to cloud…</div></div>
 </div>
-<div id="calendar" aria-label="Worker availability calendar showing last week, this week and next two weeks"></div>
+<div id="calendar" aria-label="Worker availability calendar showing last week, this week and next two weeks"></div><div id="vehicleSlides" aria-live="polite"></div>
 <div class="footer"><span id="workerCount">Waiting for worker data</span><span>Last Week + This Week + Next 2 Weeks · Sunday-start weeks · Updates automatically · Read only</span></div>
 <div id="authGate" class="auth"><form id="authForm" class="auth-card">
  <h2>Worker Availability Display</h2><p>Sign in with the authorized Bodyshop Tracker owner account. This page is read-only.</p>
@@ -101,60 +125,52 @@ function workerEvents(person){
  });
  return result;
 }
+const STAGE_ICON={"Waiting approval":"📝","Waiting Job card":"🗂️","Waiting Labor":"⏳","Tire change & Balance / Wheel alignment":"🛞","Mechanical repair in progress":"⚙️","Disassembling":"🪛","Panel Beating":"🔨","Preparation":"🧽","Painting":"🎨","Reassembly":"🔩","Detailing":"✨","Waiting for parts":"📦","QC":"✅","Job not done":"🚧","Delivered":"🚗"};
+const STAGE_WORKER_KEY={"Waiting approval":"technician","Waiting Job card":"technician","Waiting Labor":"technician","Tire change & Balance / Wheel alignment":"technician","Mechanical repair in progress":"technician","Disassembling":"panelbeater","Panel Beating":"panelbeater","Preparation":"panelbeater","Painting":"painter","Reassembly":"panelbeater","Detailing":"detailer","Waiting for parts":"technician","QC":"technician","Job not done":"technician","Delivered":"detailer"};
+let rotationTimer=null,rotationRunning=false,rotationPage="calendar",vehiclePageIndex=0;
+const CALENDAR_HOLD_MS=30000,VEHICLE_HOLD_MS=5000;
+const roleLabels={technician:"Technicians",panelbeater:"Panel beaters",painter:"Painters",detailer:"Detailers"};
+function dateLabel(value){const raw=dateOnly(value);if(!raw)return "—";const d=new Date(raw+"T00:00:00");return Number.isNaN(d.getTime())?raw:d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});}
+function dayCount(a,b){if(!a||!b)return 0;const n=Math.round((new Date(dateOnly(b)+"T00:00:00")-new Date(dateOnly(a)+"T00:00:00"))/86400000);return Math.max(0,n||0);}
+function assignedForStage(v,stage){const key=STAGE_WORKER_KEY[stage],names=arr(v[key]).filter(Boolean);return names.length?`${roleLabels[key]}: ${names.join(", ")}`:"No worker assigned";}
+function stageHistoryFor(v){let history=arr(v.stageHistory).filter(h=>h&&h.stage);if(!history.length)history=[{stage:v.stage,date:v.updatedDate||v.arrival||today()}];return history.map((h,i)=>{const next=history[i+1],start=dateOnly(h.date)||dateOnly(v.arrival),end=next?(dateOnly(next.date)||today()):today();return {...h,displayDate:start,days:dayCount(start,end),isCurrent:i===history.length-1};});}
+function vehicleSlideMarkup(v,index,total){
+ const history=stageHistoryFor(v);
+ const stageSteps=history.map(h=>{const stage=String(h.stage||""),icon=STAGE_ICON[stage]||"🔧",duration=h.isCurrent?`${h.days} days in current stage`:`${h.days} days`;return `<div class="stage-step${h.isCurrent?" current":""}"><div class="stage-step-head"><span class="stage-step-icon">${icon}</span><span>${escapeHtml(stage)}</span></div><div class="stage-step-meta">${h.isCurrent?"CURRENT STAGE · ":""}${dateLabel(h.displayDate)} · ${duration}</div><div class="stage-step-workers">${escapeHtml(assignedForStage(v,stage))}</div></div>`;}).join("");
+ const currentStage=v.stage||"—",currentIcon=STAGE_ICON[currentStage]||"🔧";
+ return `<section class="vehicle-slide"><div class="slide-heading"><div><div class="slide-reg">${escapeHtml(v.registration||"Vehicle")}</div><div class="slide-job">JOB NO. ${escapeHtml(v.jobcard||"—")}</div></div><div class="slide-current"><small>Current stage</small>${currentIcon} ${escapeHtml(currentStage)}</div></div><div class="slide-dates"><div class="slide-date"><small>Job start date</small><b>${dateLabel(v.arrival)}</b></div><div class="slide-date"><small>Expected finish date</small><b>${dateLabel(v.delivery)}</b></div></div><div class="slide-section-title">REPAIR STAGE HISTORY</div><div class="slide-history">${stageSteps}</div><div class="slide-footer"><span>${index+1} / ${total}</span><span>BODYSHOP TRACKER · LIVE VEHICLE STATUS</span></div></section>`;
+}
+function activeVehicles(){return vehicles.filter(v=>!completed(v.stage)).sort((a,b)=>(dateOnly(a.arrival)||"9999").localeCompare(dateOnly(b.arrival)||"9999")||String(a.registration||"").localeCompare(String(b.registration||"")));}
+function renderVehicleSlides(){const list=activeVehicles();if(!list.length){$("vehicleSlides").innerHTML='<section class="vehicle-slide"><div class="slide-heading"><div class="slide-reg">No ongoing vehicles</div><div class="slide-current">All jobs are completed</div></div></section>';return;}if(vehiclePageIndex>=list.length)vehiclePageIndex=0;$("vehicleSlides").innerHTML=list.map((v,i)=>vehicleSlideMarkup(v,i,list.length)).join("");}
+function showVehiclePage(index){const list=activeVehicles();if(!list.length){showCalendar();return;}vehiclePageIndex=((index%list.length)+list.length)%list.length;$("vehicleSlides").innerHTML=vehicleSlideMarkup(list[vehiclePageIndex],vehiclePageIndex,list.length);$("calendar").classList.add("presentation-hidden");$("vehicleSlides").classList.add("active");rotationPage="vehicle";}
+function showCalendar(){$("vehicleSlides").classList.remove("active");$("calendar").classList.remove("presentation-hidden");rotationPage="calendar";}
+function scheduleNext(){clearTimeout(rotationTimer);if(!rotationRunning)return;if(rotationPage==="calendar"){rotationTimer=setTimeout(()=>{if(!rotationRunning)return;showVehiclePage(0);scheduleNext();},CALENDAR_HOLD_MS);}else{rotationTimer=setTimeout(()=>{if(!rotationRunning)return;const list=activeVehicles();if(vehiclePageIndex+1<list.length){showVehiclePage(vehiclePageIndex+1);scheduleNext();}else{showCalendar();scheduleNext();}},VEHICLE_HOLD_MS);}}
+function playPresentation(){if(rotationRunning)return;rotationRunning=true;if(rotationPage==="vehicle"&&activeVehicles().length){scheduleNext();return;}showCalendar();scheduleNext();}
+function pausePresentation(){rotationRunning=false;clearTimeout(rotationTimer);rotationTimer=null;}
+function stopPresentation(){pausePresentation();vehiclePageIndex=0;showCalendar();}
+$("playBtn").addEventListener("click",playPresentation);$("pauseBtn").addEventListener("click",pausePresentation);$("stopBtn").addEventListener("click",stopPresentation);
 function render(data){
- vehicles=Array.isArray(data.vehicles)?data.vehicles:[];
- workers=data.workers||{};
- workerLeaveDays=data.workerLeaveDays||{};
- workerOffDays=data.workerOffDays||{};
- const roster=workerRoster();
-
- // Four complete Sunday-to-Saturday weeks:
- // last week, this week, and the next two weeks.
- // Recalculating every minute automatically advances the view each Sunday.
- const startDate=new Date();
- startDate.setHours(0,0,0,0);
- const daysSinceSunday=startDate.getDay(); // Sunday = 0
- startDate.setDate(startDate.getDate()-daysSinceSunday-7);
- const days=28;
-
- const endDate=new Date(startDate);
- endDate.setDate(endDate.getDate()+days-1);
- const monthLabel=d=>d.toLocaleDateString(undefined,{month:"long"});
- const startMonth=monthLabel(startDate),endMonth=monthLabel(endDate);
- const startYear=startDate.getFullYear(),endYear=endDate.getFullYear();
- let heading;
- if(startMonth===endMonth&&startYear===endYear) heading=`${startMonth} ${startYear}`;
- else if(startYear===endYear) heading=`${startMonth} - ${endMonth} ${endYear}`;
- else heading=`${startMonth} ${startYear} - ${endMonth} ${endYear}`;
- $("monthLabel").textContent=heading;
- $("workerCount").textContent=`${roster.length} workers · 4-week rolling view`;
- const calendar=$("calendar");
- calendar.style.setProperty("--days",days);
- calendar.style.setProperty("--workers",Math.max(roster.length,1));
- const dates=Array.from({length:days},(_,i)=>{const d=new Date(startDate);d.setDate(startDate.getDate()+i);return d});
- const headers=dates.map(d=>{
-  const wd=d.toLocaleDateString(undefined,{weekday:"short"}),monthStart=d.getDate()===1;
-  return `<div class="day-head${monthStart?" month-start":""}"><small>${wd}</small><b>${d.getDate()}</b>${monthStart?`<em>${d.toLocaleDateString(undefined,{month:"short"})}</em>`:""}</div>`;
- }).join("");
+ vehicles=Array.isArray(data.vehicles)?data.vehicles:[];workers=data.workers||{};workerLeaveDays=data.workerLeaveDays||{};workerOffDays=data.workerOffDays||{};
+ const roster=workerRoster().filter(p=>p.name.toLowerCase()!=="vinodha");
+ const startDate=new Date();startDate.setHours(0,0,0,0);startDate.setDate(startDate.getDate()-startDate.getDay()-7);
+ const days=28,endDate=new Date(startDate);endDate.setDate(endDate.getDate()+days-1);
+ const monthLabel=d=>d.toLocaleDateString(undefined,{month:"long"}),startMonth=monthLabel(startDate),endMonth=monthLabel(endDate),startYear=startDate.getFullYear(),endYear=endDate.getFullYear();
+ let heading;if(startMonth===endMonth&&startYear===endYear)heading=`${startMonth} ${startYear}`;else if(startYear===endYear)heading=`${startMonth} - ${endMonth} ${endYear}`;else heading=`${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+ $("monthLabel").textContent=heading;$("workerCount").textContent=`${roster.length} workers · 4-week rolling view`;
+ const calendar=$("calendar");calendar.style.setProperty("--days",days);calendar.style.setProperty("--workers",Math.max(roster.length,1));
+ const dates=Array.from({length:days},(_,i)=>{const d=new Date(startDate);d.setDate(startDate.getDate()+i);return d;});
+ const headers=dates.map(d=>{const wd=d.toLocaleDateString(undefined,{weekday:"short"}),monthStart=d.getDate()===1;return `<div class="day-head${monthStart?" month-start":""}"><small>${wd}</small><b>${d.getDate()}</b>${monthStart?`<em>${d.toLocaleDateString(undefined,{month:"short"})}</em>`:""}</div>`;}).join("");
  const todayKey=today();
- const body=roster.map(person=>{
-  const color=colorFor(roster,person),events=workerEvents(person);
-  const worker=`<div class="worker-cell" title="${escapeHtml(person.name)}"><i class="worker-dot" style="background:${color}"></i><span class="worker-name">${escapeHtml(person.name)}</span></div>`;
-  const cells=dates.map(d=>{
-   const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-   const classes=`day-cell${date===todayKey?" today":""}${d.getDate()===1?" month-start":""}`;
-   const status=leaveStatus(person.key,person.name,date);
-   if(status)return `<div class="${classes}"><div class="day-status${status==="OFF"?" off":""}">${status}</div></div>`;
-   const bookings=events.filter(e=>e.start<=date&&e.end>=date);
-   if(!bookings.length)return `<div class="${classes}"><div class="empty-cell"></div></div>`;
-   const cols=bookings.length===1?"single":(bookings.length>=3?"two-plus three-eligible":"two-plus");
-   const boxes=bookings.map(e=>`<div class="vehicle-box" style="--worker-color:${color}" title="${escapeHtml(e.vehicle.registration||"Vehicle")} · ${escapeHtml(e.vehicle.stage||"")}"><span>${escapeHtml(e.vehicle.registration||"Vehicle")}</span></div>`).join("");
-   return `<div class="${classes}"><div class="vehicle-grid ${cols}">${boxes}</div></div>`;
-  }).join("");
-  return worker+cells;
+ const body=roster.map(person=>{const color=colorFor(roster,person),events=workerEvents(person),worker=`<div class="worker-cell" title="${escapeHtml(person.name)}"><i class="worker-dot" style="background:${color}"></i><span class="worker-name">${escapeHtml(person.name)}</span></div>`;
+  const cells=dates.map(d=>{const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,classes=`day-cell${date===todayKey?" today":""}${d.getDate()===1?" month-start":""}`,status=leaveStatus(person.key,person.name,date),bookings=events.filter(e=>e.start<=date&&e.end>=date),statusHtml=status?`<div class="day-status${status==="OFF"?" off":""}">${status}</div>`:"";
+   if(!bookings.length)return `<div class="${classes}">${statusHtml||'<div class="empty-cell"></div>'}</div>`;
+   const cols=bookings.length===1?"single":(bookings.length>=3?"two-plus three-eligible":"two-plus"),boxes=bookings.map(e=>`<div class="vehicle-box" style="--worker-color:${color}" title="${escapeHtml(e.vehicle.registration||"Vehicle")} · ${escapeHtml(e.vehicle.stage||"")}"><span>${escapeHtml(e.vehicle.registration||"Vehicle")}</span></div>`).join("");
+   return `<div class="${classes}">${statusHtml}<div class="vehicle-grid ${cols}">${boxes}</div></div>`;
+  }).join("");return worker+cells;
  }).join("");
  calendar.style.gridTemplateRows=`34px repeat(${Math.max(roster.length,1)},minmax(0,1fr))`;
- calendar.innerHTML=`<div class="corner">WORKER / DATE</div>${headers}${body||`<div class="worker-cell">No workers found</div>`}`;
+ calendar.innerHTML=`<div class="corner">WORKER / DATE</div>${headers}${body||'<div class="worker-cell">No workers found</div>'}`;
+ renderVehicleSlides();if(rotationRunning&&rotationPage==="vehicle")showVehiclePage(vehiclePageIndex);else if(rotationPage==="calendar")showCalendar();
 }
 function showError(message){$("authError").textContent=message||""}
 $("authForm").addEventListener("submit",async e=>{
