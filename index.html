@@ -364,7 +364,9 @@ function mergeVinodhaIntoVinodhan(){
  let changed=false;
  const detailers=workers.Detailers||[];
  if(!detailers.some(n=>String(n).trim().toLowerCase()===newName.toLowerCase())){detailers.push(newName);changed=true;}
- workers.Detailers=detailers.filter(n=>String(n).trim().toLowerCase()!==oldName.toLowerCase());
+ const activeDetailers=detailers.filter(n=>String(n).trim().toLowerCase()!==oldName.toLowerCase());
+ if(activeDetailers.length!==detailers.length)changed=true;
+ workers.Detailers=activeDetailers;
  Object.keys(workers).forEach(role=>{
   const before=workers[role]||[],after=before.filter(n=>String(n).trim().toLowerCase()!==oldName.toLowerCase());
   if(after.length!==before.length)changed=true;
