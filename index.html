@@ -357,7 +357,7 @@ let workerCalendarMonth=(()=>{if(/^\\d{4}-\\d{2}$/.test(sharedWorkerCalendarMont
 const WORKER_CAL_COLORS=['#2563eb','#0f9d78','#d97706','#a855f7','#db2777','#0891b2','#65a30d','#dc2626','#4f46e5','#c2410c','#0d9488','#9333ea','#be123c','#0369a1','#4d7c0f','#a16207','#7c3aed','#0284c7','#b45309','#15803d','#be185d','#a21caf','#047857','#c026d3','#ea580c','#1d4ed8','#0e7490','#9f1239','#166534','#6d28d9'];
 const workerCalendarRoles=[['Technicians','technician'],['Panel beaters','panelbeater'],['Painters','painter'],['Detailers','detailer'],['Tire change & Wheel alignment','tirealignment']];
 function normalizeWorkerRoster(){
- Object.keys(workers).forEach(role=>workers[role]=(workers[role]||[]).filter(n=>String(n).trim().toLowerCase()!=='vinodha'));
+ // Legacy worker-name migration is handled by mergeVinodhaIntoVinodhan().
 }
 function mergeVinodhaIntoVinodhan(){
  const oldName='Vinodha',newName='Vinodhan',source='detailer|'+oldName,target='detailer|'+newName;
