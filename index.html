@@ -214,8 +214,8 @@ nav.tabbar {
 const firebaseConfig={apiKey:"AIzaSyBru-9Tx7JQkxmtHH2xsTh8sqxZU-OFXI8",authDomain:"bodyshop-tracker-eac50.firebaseapp.com",projectId:"bodyshop-tracker-eac50",storageBucket:"bodyshop-tracker-eac50.firebasestorage.app",messagingSenderId:"544192469113",appId:"1:544192469113:web:74aae9e58879d080dadca8",measurementId:"G-7WECPZWDXK"};
 firebase.initializeApp(firebaseConfig);
 const fbAuth=firebase.auth(),fbDb=firebase.firestore(),trackerDoc=fbDb.collection("privateTracker").doc("ownerData"),OWNER_EMAIL="krishanthadasun79@gmail.com";
-let cloudReady=false,cloudUnsubscribe=null,cloudSaveTimer=null,applyingCloudData=false,lastCloudWrite="";
-let workerLeaveDays={},workerOffDays={},workerCapacities={},sharedWorkerCalendarMonth="";
+let cloudReady=false,cloudUnsubscribe=null,bookingsUnsubscribe=null,cloudSaveTimer=null,applyingCloudData=false,lastCloudWrite="";
+let frontOfficeBookings=[],workerLeaveDays={},workerOffDays={},workerCapacities={},sharedWorkerCalendarMonth="";
 function setCloudStatus(s){const e=document.getElementById("cloudStatus");if(e)e.textContent=s}
 function showAuthGate(s){const g=document.getElementById("authGate");if(g)g.classList.remove("hidden");const e=document.getElementById("authError");if(e)e.textContent=s||""}
 function hideAuthGate(){document.getElementById("authGate")?.classList.add("hidden")}
@@ -357,7 +357,11 @@ function workerCalendarEvents(key,name){
   const start=dateOnly(v.arrival);if(!start)return;
   const delivery=dateOnly(v.delivery);let end=delivery||today();
   if(end<today())end=today();if(end<start)end=start;
-  if(asArray(v[key]).includes(name))events.push({v,start,end});
+  if(asArray(v[key]).includes(name))events.push({kind:"job",v,start,end});
+ });
+ frontOfficeBookings.forEach(booking=>{
+  if(!asArray(booking.workerIds).includes(key+"|"+name))return;
+  asArray(booking.dates).filter(date=>typeof date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(date)).forEach(date=>events.push({kind:"booking",booking,start:date,end:date}));
  });
  return events;
 }
