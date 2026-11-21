@@ -516,15 +516,18 @@ function selectedAvailabilityWorkers(){
  if(!people.length||!month){grid.innerHTML='<div class="hint availability-prompt">Select an employee and month to choose dates.</div>';$('availabilitySelectedCount').textContent='0 dates selected';return;}
  const [year,monthNum]=month.split('-').map(Number),days=new Date(year,monthNum,0).getDate(),weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
  const offset=new Date(year,monthNum-1,1).getDay();
- grid.innerHTML=weekdays.map(d=>`<div class="worker-date-heading" style="grid-column:auto;text-align:center">${d}</div>`).join('')+Array.from({length:offset},()=>'<span></span>').join('')+Array.from({length:days},(_,i)=>{const day=i+1,date=`${month}-${pad(day)}`;return `<label class="worker-date-option"><input type="checkbox" value="${date}" data-availability-date><span>${day}</span></label>`}).join('');
- $('availabilitySelectedCount').textContent='0 dates selected';
+  const type=$('availabilityTypeSelect').value;
+  const savedDates=new Set(people.flatMap(person=>(type==='OFF'?getWorkerOffDays(person.key,person.name):getWorkerLeaveDays(person.key,person.name)).map(x=>typeof x==='string'?x:x?.date).filter(date=>date&&date.startsWith(month+'-'))));
+  grid.innerHTML=weekdays.map(d=>`<div class="worker-date-heading" style="grid-column:auto;text-align:center">${d}</div>`).join('')+Array.from({length:offset},()=>'<span></span>').join('')+Array.from({length:days},(_,i)=>{const day=i+1,date=`${month}-${pad(day)}`;return `<label class="worker-date-option"><input type="checkbox" value="${date}" data-availability-date ${savedDates.has(date)?'checked':''}><span>${day}</span></label>`}).join('');
+  $('availabilitySelectedCount').textContent=`${grid.querySelectorAll('[data-availability-date]:checked').length} dates selected`;
 }
 function renderWorkerAvailabilityList(){
  const people=selectedAvailabilityWorkers(),list=$('workerAvailabilityList');
  if(!people.length){list.innerHTML='<span class="hint">Select one or more employees to view saved dates.</span>';return;}
  const items=people.flatMap(person=>{
-  const leaves=getWorkerLeaveDays(person.key,person.name).map(x=>typeof x==='string'?x:x?.date).filter(Boolean),offs=getWorkerOffDays(person.key,person.name).map(x=>typeof x==='string'?x:x?.date).filter(Boolean);
-  return [...leaves.map(date=>({date,type:'LEAVE',person})),...offs.map(date=>({date,type:'OFF',person}))];
+  const selectedType=$('availabilityTypeSelect').value;
+  const dates=(selectedType==='OFF'?getWorkerOffDays(person.key,person.name):getWorkerLeaveDays(person.key,person.name)).map(x=>typeof x==='string'?x:x?.date).filter(Boolean);
+  return dates.map(date=>({date,type:selectedType,person}));
  }).sort((a,b)=>a.date.localeCompare(b.date)||a.person.name.localeCompare(b.person.name)||a.type.localeCompare(b.type));
  list.innerHTML=items.length?items.map(x=>`<span class="worker-availability-chip${x.type==='OFF'?' off':''}">${escapeHtml(x.person.name)} · ${x.type} ${escapeHtml(x.date)} <button type="button" title="Cancel ${x.type} for ${escapeHtml(x.person.name)} on ${escapeHtml(x.date)}" aria-label="Cancel ${x.type} for ${escapeHtml(x.person.name)} ${escapeHtml(x.date)}" data-remove-availability="${x.person.key}|${escapeHtml(x.person.name)}|${x.type}|${x.date}">×</button></span>`).join(''):'<span class="hint">No LEAVE or OFF days recorded for the selected employees.</span>';
 }
@@ -555,7 +558,8 @@ $('addWorkerBtn').addEventListener('click',()=>{
 $('availabilityWorkerSelect').addEventListener('change',()=>{
  renderAvailabilityDateGrid();renderWorkerAvailabilityList();
 });
-$('availabilityMonthSelect').addEventListener('change',renderAvailabilityDateGrid);
+ $('availabilityMonthSelect').addEventListener('change',()=>{renderAvailabilityDateGrid();renderWorkerAvailabilityList();});
+ $('availabilityTypeSelect').addEventListener('change',()=>{renderAvailabilityDateGrid();renderWorkerAvailabilityList();});
 $('availabilityDateGrid').addEventListener('change',e=>{if(e.target.matches('[data-availability-date]')){$('availabilitySelectedCount').textContent=`${$('availabilityDateGrid').querySelectorAll('[data-availability-date]:checked').length} dates selected`;}});
 $('addAvailabilityDatesBtn').addEventListener('click',()=>{
  const people=selectedAvailabilityWorkers(),type=$('availabilityTypeSelect').value,selected=[...$('availabilityDateGrid').querySelectorAll('[data-availability-date]:checked')].map(x=>x.value);
