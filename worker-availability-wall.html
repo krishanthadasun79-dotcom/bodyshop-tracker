@@ -46,7 +46,7 @@ body{display:flex;flex-direction:column;background:#fff8fc}
 @media(max-height:650px){.top{height:42px;flex-basis:42px}.footer{height:16px;flex-basis:16px}#calendar{grid-template-rows:28px repeat(var(--workers,14),minmax(0,1fr))}.worker-cell{padding:0 3px}.day-cell{padding:0}}
 
 .top-right{gap:10px}.presentation-controls{display:flex;align-items:center;gap:5px;order:0}
-.presentation-controls button{width:30px;height:30px;padding:0;border:1px solid #ffffff70;border-radius:7px;background:#ffffff20;color:#fff;font-size:15px;display:grid;place-items:center;cursor:pointer}
+.presentation-controls button{min-width:30px;width:auto;height:30px;padding:0 6px;border:1px solid #ffffff70;border-radius:7px;background:#ffffff20;color:#fff;font-size:15px;display:grid;place-items:center;cursor:pointer}
 .presentation-controls button:hover,.presentation-controls button:focus-visible{background:#ffffff42;outline:2px solid #fff;outline-offset:1px}
 #monthLabel{order:1}#cloudStatus{order:2}#vehicleSlides{display:none;flex:1 1 auto;min-height:0;overflow:hidden;padding:clamp(12px,2vw,30px);background:linear-gradient(145deg,#fff8fc,#f8edf3)}
 #vehicleSlides.active{display:flex;align-items:stretch;justify-content:center}#calendar.presentation-hidden{display:none}
@@ -72,7 +72,7 @@ body{display:flex;flex-direction:column;background:#fff8fc}
 <div class="top">
  <div class="brand"><strong>BODYSHOP TRACKER · WORKER AVAILABILITY</strong><small>Live read-only wall display</small></div>
  <div class="top-right"><div class="presentation-controls" aria-label="Presentation controls">
-<button id="playBtn" type="button" aria-label="Play" title="Play">▶</button><button id="pauseBtn" type="button" aria-label="Pause" title="Pause">Ⅱ</button><button id="stopBtn" type="button" aria-label="Stop" title="Stop">■</button></div>
+<button id="prevSlideBtn" type="button" aria-label="Previous slide" title="Previous slide">|◀</button><button id="playBtn" type="button" aria-label="Play" title="Play">▶</button><button id="pauseBtn" type="button" aria-label="Pause" title="Pause">Ⅱ</button><button id="stopBtn" type="button" aria-label="Stop" title="Stop">■</button><button id="nextSlideBtn" type="button" aria-label="Next slide" title="Next slide">▶|</button></div>
 <div id="monthLabel" class="month">Connecting…</div><div id="cloudStatus" class="status">Connecting to cloud…</div></div>
 </div>
 <div id="calendar" aria-label="Worker availability calendar showing last week, this week and next two weeks"></div><div id="vehicleSlides" aria-live="polite"></div>
@@ -154,6 +154,22 @@ function scheduleNext(){clearTimeout(rotationTimer);if(!rotationRunning)return;i
 function playPresentation(){if(rotationRunning)return;rotationRunning=true;if(rotationPage==="vehicle"&&activeVehicles().length){scheduleNext();return;}showCalendar();scheduleNext();}
 function pausePresentation(){rotationRunning=false;clearTimeout(rotationTimer);rotationTimer=null;}
 function stopPresentation(){pausePresentation();vehiclePageIndex=0;showCalendar();}
+function moveSlide(direction){
+ const list=activeVehicles();
+ if(!list.length){showCalendar();return;}
+ if(rotationPage==="calendar"){
+  if(direction>0)showVehiclePage(0);
+  else showVehiclePage(list.length-1);
+ }else{
+  const next=vehiclePageIndex+direction;
+  if(next<0)showCalendar();
+  else if(next>=list.length)showCalendar();
+  else showVehiclePage(next);
+ }
+ if(rotationRunning)scheduleNext();
+}
+$("prevSlideBtn").addEventListener("click",()=>moveSlide(-1));
+$("nextSlideBtn").addEventListener("click",()=>moveSlide(1));
 $("playBtn").addEventListener("click",playPresentation);$("pauseBtn").addEventListener("click",pausePresentation);$("stopBtn").addEventListener("click",stopPresentation);
 function render(data){
  vehicles=Array.isArray(data.vehicles)?data.vehicles:[];workers=data.workers||{};workerLeaveDays=data.workerLeaveDays||{};workerOffDays=data.workerOffDays||{};
