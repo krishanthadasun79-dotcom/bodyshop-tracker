@@ -28,6 +28,7 @@ body{display:flex;flex-direction:column;background:#fff8fc}
 .vehicle-grid.three-wide{grid-template-columns:repeat(3,minmax(0,1fr))}
 .vehicle-box{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;width:100%;padding:0 1px;border:1px solid color-mix(in srgb,var(--worker-color) 78%,#fff);border-radius:2px;background:color-mix(in srgb,var(--worker-color) 20%,#fff);color:#17202c;overflow:hidden}
 .vehicle-box span{display:block;max-width:100%;white-space:nowrap;overflow:visible;text-overflow:clip;font-size:clamp(4px,.31vw,7px);font-weight:900;letter-spacing:-.32px;line-height:1;transform:scaleX(.9)}
+.vehicle-box.booking-box{background:#c7e5ff;border-color:#8fc5f1;color:#174b78}
 .vehicle-grid.single .vehicle-box span{font-size:clamp(6px,.43vw,9px);letter-spacing:-.25px}
 .day-status{width:100%;display:flex;align-items:center;justify-content:center;color:#a51f45;font-size:clamp(7px,.58vw,11px);font-weight:900;letter-spacing:.1px;white-space:nowrap;background:#ffe5eb}
 .day-status.off{color:#475569;background:#e9edf2}
@@ -97,7 +98,7 @@ const today=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth(
 const dateOnly=s=>String(s||"").slice(0,10);
 const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const completed=stage=>stage==="Delivered"||stage==="Job not done";
-let vehicles=[],workers={},workerLeaveDays={},workerOffDays={},unsubscribe=null,latestData=null;
+let vehicles=[],workers={},workerLeaveDays={},workerOffDays={},frontOfficeBookings=[],unsubscribe=null,unsubscribeBookings=null,latestData=null;
 function leaveStatus(key,name,date){
  const off=arr(workerOffDays[`${key}|${name}`]);
  if(off.includes(date))return "OFF";
@@ -121,7 +122,12 @@ function workerEvents(person){
   let end=dateOnly(v.delivery)||today();
   if(end<today())end=today();
   if(end<start)end=start;
-  result.push({vehicle:v,start,end});
+  result.push({kind:"job",vehicle:v,start,end});
+ });
+ const id=person.key+"|"+person.name;
+ frontOfficeBookings.filter(b=>arr(b.workerIds).includes(id)).forEach(booking=>{
+  const dates=arr(booking.dates).map(dateOnly).filter(Boolean).sort();
+  if(dates.length)result.push({kind:"booking",booking,dates,start:dates[0],end:dates[dates.length-1]});
  });
  return result;
 }
@@ -162,9 +168,9 @@ function render(data){
  const headers=dates.map(d=>{const wd=d.toLocaleDateString(undefined,{weekday:"short"}),monthStart=d.getDate()===1;return `<div class="day-head${monthStart?" month-start":""}"><small>${wd}</small><b>${d.getDate()}</b>${monthStart?`<em>${d.toLocaleDateString(undefined,{month:"short"})}</em>`:""}</div>`;}).join("");
  const todayKey=today();
  const body=roster.map(person=>{const color=colorFor(roster,person),events=workerEvents(person),worker=`<div class="worker-cell" title="${escapeHtml(person.name)}"><i class="worker-dot" style="background:${color}"></i><span class="worker-name">${escapeHtml(person.name)}</span></div>`;
-  const cells=dates.map(d=>{const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,classes=`day-cell${date===todayKey?" today":""}${d.getDate()===1?" month-start":""}`,status=leaveStatus(person.key,person.name,date),bookings=events.filter(e=>e.start<=date&&e.end>=date),statusHtml=status?`<div class="day-status${status==="OFF"?" off":""}">${status}</div>`:"";
-   if(status||!bookings.length)return `<div class="${classes}">${statusHtml||'<div class="empty-cell"></div>'}</div>`;
-   const cols=bookings.length===1?"single":(bookings.length>=3?"two-plus three-eligible":"two-plus"),boxes=bookings.map(e=>`<div class="vehicle-box" style="--worker-color:${color}" title="${escapeHtml(e.vehicle.registration||"Vehicle")} · ${escapeHtml(e.vehicle.stage||"")}"><span>${escapeHtml(e.vehicle.registration||"Vehicle")}</span></div>`).join("");
+  const cells=dates.map(d=>{const date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,classes=`day-cell${date===todayKey?" today":""}${d.getDate()===1?" month-start":""}`,status=leaveStatus(person.key,person.name,date),dayEvents=events.filter(e=>e.kind==="job"?(e.start<=date&&e.end>=date):e.dates.includes(date)),statusHtml=status?`<div class="day-status${status==="OFF"?" off":""}">${status}</div>`:"";
+   if(!dayEvents.length)return `<div class="${classes}">${statusHtml||'<div class="empty-cell"></div>'}</div>`;
+   const cols=dayEvents.length===1?"single":(dayEvents.length>=3?"two-plus three-eligible":"two-plus"),boxes=dayEvents.map(e=>{if(e.kind==="booking"){const reg=e.booking.reg||"Vehicle";return `<div class="vehicle-box booking-box" title="${escapeHtml(reg)} · BOOKING"><span>🗓️ ${escapeHtml(reg)} · BOOKING</span></div>`;}const v=e.vehicle;return `<div class="vehicle-box" style="--worker-color:${color}" title="${escapeHtml(v.registration||"Vehicle")} · ${escapeHtml(v.stage||"")}"><span>${escapeHtml(v.registration||"Vehicle")}</span></div>`;}).join("");
    return `<div class="${classes}">${statusHtml}<div class="vehicle-grid ${cols}">${boxes}</div></div>`;
   }).join("");return worker+cells;
  }).join("");
@@ -180,14 +186,19 @@ $("authForm").addEventListener("submit",async e=>{
  finally{button.disabled=false}
 });
 auth.onAuthStateChanged(async user=>{
- if(unsubscribe){unsubscribe();unsubscribe=null}
+ if(unsubscribe){unsubscribe();unsubscribe=null}if(unsubscribeBookings){unsubscribeBookings();unsubscribeBookings=null}
  if(!user){$("authGate").classList.remove("hidden");$("cloudStatus").textContent="Sign in required";return}
  if(user.email!==OWNER_EMAIL||!user.emailVerified){await auth.signOut();showError(user.emailVerified?"This account is not authorized.":"Verify the owner email before signing in.");return}
  $("authGate").classList.add("hidden");$("cloudStatus").textContent="Listening for live updates…";
  unsubscribe=doc.onSnapshot(snapshot=>{
   if(!snapshot.exists){$("cloudStatus").textContent="No tracker data found";return}
-  latestData=snapshot.data();render(latestData);$("cloudStatus").textContent="LIVE · Synced";
- },err=>{$("cloudStatus").textContent="Cloud sync error";console.error(err)});
+  latestData=snapshot.data();render(latestData);$("cloudStatus").textContent="LIVE · Tracker synced";
+ },err=>{$("cloudStatus").textContent="Tracker sync error";console.error(err)});
+ unsubscribeBookings=db.collection("frontOfficeBookings").onSnapshot(snapshot=>{
+  frontOfficeBookings=snapshot.docs.map(d=>({id:d.id,...d.data()}));
+  if(latestData)render(latestData);
+  $("cloudStatus").textContent="LIVE · Tracker + Bookings";
+ },err=>{$("cloudStatus").textContent="Booking sync error";console.error(err)});
 });
 // Recalculate the rolling date window every minute so it advances automatically at midnight.
 setInterval(()=>{if(latestData)render(latestData)},60*1000);
