@@ -634,8 +634,7 @@ function buildCompletionReport(){
 @media(max-width:560px){.wc-worker-fixed{flex-basis:105px;width:105px;min-width:105px;padding:5px}.wc-worker-fixed strong{font-size:10px;overflow-wrap:anywhere}.wc-worker-fixed small{font-size:9px}.wc-timeline-days{grid-auto-columns:68px}.wc-timeline-cell{min-height:78px}}
 .availability-prompt{white-space:nowrap;font-size:10px;}
 
-/* Due-today and past-due vehicle alert: gently pulse from the original stage colour to light red.
-   The slower 1.6-second pulse keeps the card readable while making it easy to notice. */
+/* Due / overdue cards pulse between their exact existing stage colour and light red. */
 .vehicle.stage-waiting { --vehicle-stage-bg:#f0f7ff; }
 .vehicle.stage-green { --vehicle-stage-bg:#f0fdf4; }
 .vehicle.stage-purple { --vehicle-stage-bg:#f8f5ff; }
@@ -647,13 +646,13 @@ function buildCompletionReport(){
 .vehicle.stage-align { --vehicle-stage-bg:#f0fcfd; }
 .vehicle.stage-tires { --vehicle-stage-bg:#f8f5ff; }
 .vehicle.stage-mechanical { --vehicle-stage-bg:#f1fbf4; }
-.vehicle.due-alert { animation:vehicleDuePulse 1.6s ease-in-out infinite; }
+.vehicle.due-alert {
+  animation:vehicleDuePulse 2.4s ease-in-out infinite !important;
+  will-change:background-color;
+}
 @keyframes vehicleDuePulse {
   0%, 100% { background-color:var(--vehicle-stage-bg, #f8fafc); }
-  50% { background-color:#ffd9df; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .vehicle.due-alert { animation:none; background-color:#ffd9df; }
+  45%, 55% { background-color:#ffb8c3; }
 }
 
 </style></head><body><h2>Bodyshop Tracker Completion Report</h2><p>Period: ${esc($('reportStartDate').value)} to ${esc($('reportEndDate').value)}</p><table><thead><tr><th>Vehicle Registration</th><th>Make</th><th>Model</th><th>Job Card</th><th>Final Stage</th><th>Vehicle In Date/Time</th><th>Completed / Job Not Done Date</th><th>Expected Delivery Date/Time</th><th>Assigned Workers</th><th>Full Repair Stage History</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
