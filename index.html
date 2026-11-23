@@ -174,6 +174,24 @@ nav.tabbar {
 @media(max-width:560px){.worker-add-form{grid-template-columns:1fr}.worker-availability-form{grid-template-columns:1fr}.worker-date-grid{gap:4px}.worker-date-option{min-height:36px;font-size:11px}}
 
 .availability-prompt{white-space:nowrap;font-size:10px;}
+
+/* Due and overdue active vehicle cards: pulse from their existing stage colour to light red. */
+.vehicle.due-alert {
+  animation: bodyshopDuePulse 2.4s ease-in-out infinite !important;
+}
+@keyframes bodyshopDuePulse {
+  0%, 100% { background-color: var(--due-stage-colour, #f8fafc); }
+  50% { background-color: #ffb8c3; }
+}
+.vehicle.stage-waiting { --due-stage-colour: #f0f7ff; }
+.vehicle.stage-green { --due-stage-colour: #f0fdf4; }
+.vehicle.stage-purple { --due-stage-colour: #f8f5ff; }
+.vehicle.stage-grey { --due-stage-colour: #f8fafc; }
+.vehicle.stage-yellow { --due-stage-colour: #fefce8; }
+.vehicle.stage-orange { --due-stage-colour: #fff7ed; }
+.vehicle.stage-align { --due-stage-colour: #f0fcfd; }
+.vehicle.stage-tires { --due-stage-colour: #f8f5ff; }
+.vehicle.stage-mechanical { --due-stage-colour: #f1fbf4; }
 </style></head><body>
 <div id="splash" class="splash"><img src="bodyshop-startup-v2.png" alt="Bodyshop Tracker"><div>BODYSHOP TRACKER</div></div><div id="authGate" class="auth-gate"><form id="authForm" class="auth-card"><h2>Bodyshop Tracker</h2><p>Private sign-in for the owner account only.</p><label>Email address</label><input type="email" value="krishanthadasun79@gmail.com" readonly><label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" required placeholder="Your Firebase password"><button class="btn" id="authSubmit" type="submit">Sign in</button><button class="btn secondary" id="resetPassword" type="button">Reset password</button><p id="authError" class="auth-error" role="alert"></p></form></div><header><div class="top"><img src="bodyshop-icon-v2-192.png" alt=""><div><h1>Bodyshop Tracker</h1><p>Vehicle workflow · Worker assignments</p></div><span id="cloudStatus">Private cloud</span><button id="signOutBtn" type="button">Sign out</button></div></header>
 <main class="wrap">
@@ -633,28 +651,6 @@ function buildCompletionReport(){
 .worker-remove-btn{margin-top:7px}
 @media(max-width:560px){.wc-worker-fixed{flex-basis:105px;width:105px;min-width:105px;padding:5px}.wc-worker-fixed strong{font-size:10px;overflow-wrap:anywhere}.wc-worker-fixed small{font-size:9px}.wc-timeline-days{grid-auto-columns:68px}.wc-timeline-cell{min-height:78px}}
 .availability-prompt{white-space:nowrap;font-size:10px;}
-
-/* Due / overdue cards pulse between their exact existing stage colour and light red. */
-.vehicle.stage-waiting { --vehicle-stage-bg:#f0f7ff; }
-.vehicle.stage-green { --vehicle-stage-bg:#f0fdf4; }
-.vehicle.stage-purple { --vehicle-stage-bg:#f8f5ff; }
-.vehicle.stage-grey { --vehicle-stage-bg:#f8fafc; }
-.vehicle.stage-yellow { --vehicle-stage-bg:#fefce8; }
-.vehicle.stage-orange { --vehicle-stage-bg:#fff7ed; }
-.vehicle.stage-delivered { --vehicle-stage-bg:#fef2f2; }
-.vehicle.stage-notdone { --vehicle-stage-bg:#fce7f3; }
-.vehicle.stage-align { --vehicle-stage-bg:#f0fcfd; }
-.vehicle.stage-tires { --vehicle-stage-bg:#f8f5ff; }
-.vehicle.stage-mechanical { --vehicle-stage-bg:#f1fbf4; }
-.vehicle.due-alert {
-  animation:vehicleDuePulse 2.4s ease-in-out infinite !important;
-  will-change:background-color;
-}
-@keyframes vehicleDuePulse {
-  0%, 100% { background-color:var(--vehicle-stage-bg, #f8fafc); }
-  45%, 55% { background-color:#ffb8c3; }
-}
-
 </style></head><body><h2>Bodyshop Tracker Completion Report</h2><p>Period: ${esc($('reportStartDate').value)} to ${esc($('reportEndDate').value)}</p><table><thead><tr><th>Vehicle Registration</th><th>Make</th><th>Model</th><th>Job Card</th><th>Final Stage</th><th>Vehicle In Date/Time</th><th>Completed / Job Not Done Date</th><th>Expected Delivery Date/Time</th><th>Assigned Workers</th><th>Full Repair Stage History</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
  const filename=`bodyshop-completion-report-${$('reportStartDate').value}-to-${$('reportEndDate').value}.xls`;
  return {html,filename,file:new File(['\\ufeff'+html],filename,{type:'application/vnd.ms-excel;charset=utf-8'})};
