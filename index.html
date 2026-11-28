@@ -223,7 +223,7 @@ nav.tabbar {
 <div class="panel worker-add-panel"><h2>Worker booking capacity</h2><p class="hint">Set the maximum number of vehicles that can be assigned to each worker on one working day. Leave capacity blank until it has been configured.</p><div class="worker-add-form"><label>Worker<select id="capacityWorkerSelect"><option value="">Select worker</option></select></label><label>Maximum vehicles<input id="workerCapacityInput" type="number" min="1" step="1" inputmode="numeric" placeholder="Enter capacity"></label><button type="button" class="btn" id="saveWorkerCapacityBtn">Add</button></div><p id="workerCapacityStatus" class="hint" aria-live="polite">Workers without a saved capacity will not be available for new bookings.</p></div>
 <div class="panel worker-concerns-panel"><h2>Worker repair concerns</h2><label class="worker-concern-select">Select worker<select id="workerConcernSelect"><option value="">Select worker</option><option value="*">All workers</option></select></label><div id="workerConcernResults"></div></div><div class="panel worker-add-panel"><h2>Add workers</h2><p class="hint">Enter a worker name, select the category, then add. New names are appended to the end of that category.</p>
 <div class="worker-add-form"><label>Worker name<input id="newWorkerName" placeholder="Enter worker name" autocapitalize="words"></label><label>Worker category<select id="newWorkerCategory"><option value="technician">Technician</option><option value="panelbeater">Panel beater</option><option value="painter">Painter</option><option value="detailer">Detailer</option><option value="tirealignment">Tire change &amp; Wheel alignment</option></select></label><button type="button" class="btn" id="addWorkerBtn">Add worker</button></div></div>
-<div class="panel worker-add-panel"><h2>Worker leave and OFF management</h2><p class="hint">Select one worker, choose LEAVE or OFF, select a month, then tick one or more dates and press Add. Existing dates for the selected worker appear below and can be cancelled individually.</p>
+<div class="panel worker-add-panel"><h2>Worker leave and OFF management</h2><p class="hint">Select one worker to view existing dates, or select All workers to start with a blank calendar. In All workers mode, tick the dates to apply to every employee, choose LEAVE or OFF, then press Add.</p>
 <div class="worker-availability-form"><label>Employee<select id="availabilityWorkerSelect" aria-label="Select employee"><option value="">Select worker</option><option value="*">All workers</option></select></label><label>Type<select id="availabilityTypeSelect"><option value="LEAVE">LEAVE</option><option value="OFF">OFF</option></select></label><label>Month<select id="availabilityMonthSelect"></select></label></div>
 <div id="availabilityDateGrid" class="worker-date-grid"><div class="hint">Select an employee to choose dates.</div></div>
 <div class="worker-availability-actions"><span id="availabilitySelectedCount" class="hint">0 dates selected</span><button type="button" class="btn" id="addAvailabilityDatesBtn">Add selected dates</button></div>
@@ -535,12 +535,24 @@ function selectedAvailabilityWorkers(){
  const [year,monthNum]=month.split('-').map(Number),days=new Date(year,monthNum,0).getDate(),weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
  const offset=new Date(year,monthNum-1,1).getDay();
   const type=$('availabilityTypeSelect').value;
-  const savedDates=new Set(people.flatMap(person=>(type==='OFF'?getWorkerOffDays(person.key,person.name):getWorkerLeaveDays(person.key,person.name)).map(x=>typeof x==='string'?x:x?.date).filter(date=>date&&date.startsWith(month+'-'))));
+  // All workers is a bulk-entry mode: always start with a completely clear calendar.
+  // Individual-worker mode continues to show that worker's previously saved dates.
+  const allWorkersSelected=$('availabilityWorkerSelect').value==='*';
+  const savedDates=allWorkersSelected?new Set():new Set(
+   people.flatMap(person=>(type==='OFF'?getWorkerOffDays(person.key,person.name):getWorkerLeaveDays(person.key,person.name))
+    .map(x=>typeof x==='string'?x:x?.date).filter(date=>date&&date.startsWith(month+'-')))
+  );
   grid.innerHTML=weekdays.map(d=>`<div class="worker-date-heading" style="grid-column:auto;text-align:center">${d}</div>`).join('')+Array.from({length:offset},()=>'<span></span>').join('')+Array.from({length:days},(_,i)=>{const day=i+1,date=`${month}-${pad(day)}`;return `<label class="worker-date-option"><input type="checkbox" value="${date}" data-availability-date ${savedDates.has(date)?'checked':''}><span>${day}</span></label>`}).join('');
   $('availabilitySelectedCount').textContent=`${grid.querySelectorAll('[data-availability-date]:checked').length} dates selected`;
 }
 function renderWorkerAvailabilityList(){
  const people=selectedAvailabilityWorkers(),list=$('workerAvailabilityList');
+ // Do not list the existing per-employee records in bulk mode; this view is for
+ // choosing new dates to apply to everyone, not reviewing the current roster.
+ if($('availabilityWorkerSelect').value==='*'){
+  list.innerHTML='<span class="hint">Bulk mode: existing employee dates are hidden. Tick only the dates you want to apply to all employees.</span>';
+  return;
+ }
  if(!people.length){list.innerHTML='<span class="hint">Select one or more employees to view saved dates.</span>';return;}
  const items=people.flatMap(person=>{
   const selectedType=$('availabilityTypeSelect').value;
