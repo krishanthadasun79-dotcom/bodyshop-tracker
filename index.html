@@ -736,6 +736,9 @@ function buildCompletionReport(){
 .worker-remove-btn{margin-top:7px}
 @media(max-width:560px){.wc-worker-fixed{flex-basis:105px;width:105px;min-width:105px;padding:5px}.wc-worker-fixed strong{font-size:10px;overflow-wrap:anywhere}.wc-worker-fixed small{font-size:9px}.wc-timeline-days{grid-auto-columns:68px}.wc-timeline-cell{min-height:78px}}
 .availability-prompt{white-space:nowrap;font-size:10px;}
+
+/* Compact single-line app title on phones; reclaim vertical space for the dashboard. */
+@media(max-width:520px){header{padding:8px 10px}header .top{gap:7px;flex-wrap:nowrap}header img{width:36px;height:36px;flex:0 0 36px}header .top>div{min-width:0;flex:1}header .top h1{font-size:16px;line-height:1.15;white-space:nowrap;letter-spacing:-.25px}header p{display:none}#cloudStatus{display:none}#signOutBtn{padding:7px 9px!important;font-size:11px;white-space:nowrap}}
 </style></head><body><h2>Bodyshop Tracker Completion Report</h2><p>Period: ${esc($('reportStartDate').value)} to ${esc($('reportEndDate').value)}</p><table><thead><tr><th>Vehicle Registration</th><th>Make</th><th>Model</th><th>Job Card</th><th>Final Stage</th><th>Vehicle In Date/Time</th><th>Completed / Job Not Done Date</th><th>Expected Delivery Date/Time</th><th>Assigned Workers</th><th>Full Repair Stage History</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
  const filename=`bodyshop-completion-report-${$('reportStartDate').value}-to-${$('reportEndDate').value}.xls`;
  return {html,filename,file:new File(['\\ufeff'+html],filename,{type:'application/vnd.ms-excel;charset=utf-8'})};
@@ -778,13 +781,14 @@ $('exportBtn').onclick=()=>{download('bodyshop-tracker-backup-'+today()+'.json',
 $('csvBtn').onclick=()=>{const cols=['registration','jobcard','make','model','stage','technician','panelbeater','painter','detailer','tirealignment','arrival','delivery','notes','concerns','completedDate'];const rows=[cols.join(','),...vehicles.map(v=>cols.map(k=>{const val=['technician','panelbeater','painter','detailer','tirealignment'].includes(k)?asArray(v[k]).join('; '):(k==='concerns'?asArray(v.concerns).map(c=>`${asArray(c.workers).join(', ')}: ${c.text}`).join(' | '):(v[k]||''));return '"'+String(val).replace(/"/g,'""')+'"'}).join(','))];download('bodyshop-vehicles-'+today()+'.csv','\ufeff'+rows.join('\r\n'),'text/csv;charset=utf-8');toast('CSV exported')};function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 // Build identifier is derived from the app's own CSS and JavaScript, so it changes automatically when either changes.
 (function setAutomaticBuildVersion(){
- const source=(document.querySelector('style')?.textContent||'')+'|'+document.querySelector('script')?.textContent;
+ // Hash the complete app markup so HTML, CSS and JavaScript changes produce a visible build ID.
+ const source=document.documentElement.innerHTML;
  let hash=2166136261;
  for(let i=0;i<source.length;i++){hash^=source.charCodeAt(i);hash=Math.imul(hash,16777619);}
  const build=(hash>>>0).toString(16).toUpperCase().padStart(8,'0').slice(0,6);
- const version='1.1.1';
+ const version='1.1.2+'+build;
  ['appVersion','appVersionModal'].forEach(id=>{const el=$(id);if(el)el.textContent=version;});
-})();
+})();;
 applyTheme('magenta');
 setTimeout(()=>{const sp=$('splash');if(sp){sp.classList.add('hide');setTimeout(()=>sp.remove(),400)}},1600);fillSelect('stage',STAGES);fillSelect('stageFilter',STAGES,'All stages');load();refreshWorkers();refreshMakes();buildConcernWorkerPicker([]);renderConcernEditor();refreshWorkerConcernSelect();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw-v2.js?rev=20261107-firebase',{updateViaCache:'none'}).catch(()=>{}));
 </script></body></html>
