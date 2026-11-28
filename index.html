@@ -206,6 +206,17 @@ nav.tabbar {
 .vehicle.booking-converted.stage-mechanical{background:#d1e9d9;border-color:#87b99a}
 .vehicle.booking-converted.stage-delivered{background:#f2cccc;border-color:#d58c8c}
 .vehicle.booking-converted.stage-notdone{background:#edc2d7;border-color:#c46a94}
+
+/* Phone header: force the title and sign-out control to remain on one row. */
+@media screen and (max-width: 600px) {
+  body > header { padding: 7px 8px !important; }
+  body > header .top { display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important; align-items:center !important; gap:7px !important; }
+  body > header .top > img { width:32px !important; height:32px !important; flex:0 0 32px !important; }
+  body > header .top > div { flex:1 1 auto !important; min-width:0 !important; }
+  body > header .top h1 { font-size:15px !important; line-height:1.1 !important; white-space:nowrap !important; }
+  body > header .top p, body > header .top #cloudStatus { display:none !important; }
+  body > header .top #signOutBtn { flex:0 0 auto !important; width:auto !important; white-space:nowrap !important; padding:6px 8px !important; font-size:10px !important; }
+}
 </style></head><body>
 <div id="splash" class="splash"><img src="bodyshop-startup-v2.png" alt="Bodyshop Tracker"><div>BODYSHOP TRACKER</div></div><div id="authGate" class="auth-gate"><form id="authForm" class="auth-card"><h2>Bodyshop Tracker</h2><p>Private sign-in for the owner account only.</p><label>Email address</label><input type="email" value="krishanthadasun79@gmail.com" readonly><label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" required placeholder="Your Firebase password"><button class="btn" id="authSubmit" type="submit">Sign in</button><button class="btn secondary" id="resetPassword" type="button">Reset password</button><p id="authError" class="auth-error" role="alert"></p></form></div><header><div class="top"><img src="bodyshop-icon-v2-192.png" alt=""><div><h1>Bodyshop Tracker</h1><p>Vehicle workflow · Worker assignments</p></div><span id="cloudStatus">Private cloud</span><button id="signOutBtn" type="button">Sign out</button></div></header>
 <main class="wrap">
@@ -779,14 +790,9 @@ $('jobNotDoneCount').closest('.stat').addEventListener('click',()=>{completedSta
 $('stagesTab').onclick=()=>{renderStages();showView('stages')};$('workersTab').onclick=()=>{renderWorkers();showView('workers')};$('settingsTab').onclick=()=>{renderSettings();showView('settings')};$('search').oninput=render;$('completedSearch').oninput=renderCompleted;$('stageFilter').onchange=render;$('workerFilter').onchange=render;$('deliveryDateFilter').onchange=render;$('clearDeliveryDateFilter').onclick=()=>{$('deliveryDateFilter').value='';render()};$('arrival').onchange=updateDurationPreview;$('delivery').onchange=updateDurationPreview;
 $('exportBtn').onclick=()=>{download('bodyshop-tracker-backup-'+today()+'.json',JSON.stringify({app:'Bodyshop Tracker',version:3,exportedAt:new Date().toISOString(),vehicles,workers,makes,workerLeaveDays,workerOffDays,workerCapacities},null,2),'application/json');toast('Backup exported')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text()),arr=Array.isArray(d)?d:d.vehicles;if(!Array.isArray(arr))throw Error('Invalid');if(!confirm(`Import ${arr.length} vehicle records and directory settings? This replaces current data.`))return;vehicles=arr;workers={...JSON.parse(JSON.stringify(DEFAULT_WORKERS)),...(d.workers||{})};workerLeaveDays=d.workerLeaveDays||{};workerOffDays=d.workerOffDays||{};workerCapacities=d.workerCapacities||{};normalizeWorkerRoster();makes=[...new Set([...DEFAULT_MAKES,...(d.makes||[])])];vehicles.forEach(v=>{['technician','panelbeater','painter','detailer','tirealignment'].forEach(k=>v[k]=asArray(v[k]));if(!Array.isArray(v.stageHistory))v.stageHistory=[{stage:v.stage,date:v.updatedDate||v.arrival||today()}];v.notes=v.notes||'';if(!Array.isArray(v.concerns))v.concerns=[];v.concerns=v.concerns.map((c,i)=>typeof c==='string'?{id:'legacy-'+i,workers:[],text:c,createdAt:''}:{id:c.id||('concern-'+i),workers:asArray(c.workers),text:c.text||'',createdAt:c.createdAt||''})});save();refreshWorkers();refreshMakes();render();toast('Backup imported')}catch(err){alert('Could not import a valid tracker backup')}e.target.value=''};
 $('csvBtn').onclick=()=>{const cols=['registration','jobcard','make','model','stage','technician','panelbeater','painter','detailer','tirealignment','arrival','delivery','notes','concerns','completedDate'];const rows=[cols.join(','),...vehicles.map(v=>cols.map(k=>{const val=['technician','panelbeater','painter','detailer','tirealignment'].includes(k)?asArray(v[k]).join('; '):(k==='concerns'?asArray(v.concerns).map(c=>`${asArray(c.workers).join(', ')}: ${c.text}`).join(' | '):(v[k]||''));return '"'+String(val).replace(/"/g,'""')+'"'}).join(','))];download('bodyshop-vehicles-'+today()+'.csv','\ufeff'+rows.join('\r\n'),'text/csv;charset=utf-8');toast('CSV exported')};function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-// Build identifier is derived from the app's own CSS and JavaScript, so it changes automatically when either changes.
-(function setAutomaticBuildVersion(){
- // Hash the complete app markup so HTML, CSS and JavaScript changes produce a visible build ID.
- const source=document.documentElement.innerHTML;
- let hash=2166136261;
- for(let i=0;i<source.length;i++){hash^=source.charCodeAt(i);hash=Math.imul(hash,16777619);}
- const build=(hash>>>0).toString(16).toUpperCase().padStart(8,'0').slice(0,6);
- const version='1.1.2+'+build;
+// Simple app version: increase the final digit for each published update.
+(function setAppVersion(){
+ const version='1.1.3';
  ['appVersion','appVersionModal'].forEach(id=>{const el=$(id);if(el)el.textContent=version;});
 })();;
 applyTheme('magenta');
